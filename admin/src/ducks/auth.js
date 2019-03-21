@@ -1,5 +1,7 @@
 import { Record } from 'immutable'
-const appName = 'ADV_REACT'
+import firebase from 'firebase'
+import 'firebase/auth'
+import { appName } from '../config'
 
 /**
  * Constants
@@ -34,7 +36,7 @@ export default function reducer(state = new ReducerRecord(), action) {
  * Selectors
  * */
 
-export const isAuthorized = (state) => !!state.auth.user
+export const isAuthorized = (state) => !!state[moduleName].user
 
 /**
  * Action Creators
@@ -50,10 +52,14 @@ export function signIn(email, password) {
 }
 
 export function signUp(email, password) {
-  return (dispatch) => {
+  return async (dispatch) => {
+    const user = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+
     dispatch({
       type: SIGN_UP_SUCCESS,
-      payload: { user: {} }
+      payload: { user }
     })
   }
 }

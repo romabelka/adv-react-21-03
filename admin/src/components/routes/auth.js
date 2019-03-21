@@ -20,7 +20,6 @@ class AuthPage extends Component {
           path="/auth/sign-up"
           render={() => <SignUpForm onSubmit={this.handleSignUp} />}
         />
-        <SignUpForm onSubmit={this.handleSignIn} />
       </div>
     )
   }
