@@ -6,4 +6,9 @@ import history from '../history'
 
 const enhancer = applyMiddleware(routerMiddleware(history), logger)
 
-export default createStore(reducer, enhancer)
+const store = createStore(reducer, enhancer)
+
+//dev only!!!!
+window.store = store
+
+export default store
