@@ -63,3 +63,8 @@ export function signUp(email, password) {
     })
   }
 }
+
+//FB
+firebase.auth().onAuthStateChanged((user) => {
+  console.log('---', 'auth state changed', user)
+})
