@@ -12,7 +12,7 @@ const prefix = `${appName}/${moduleName}`
 
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
-export const FETCH_USER = `${prefix}/SIGN_UP_SUCCESS`
+export const FETCH_USER = `${prefix}/FETCH_USER`
 
 /**
  * Reducer
@@ -46,9 +46,11 @@ export const isAuthorized = (state) => !!state[moduleName].user
  * */
 
 export const signIn = (email, password) => async (dispatch) => {
+  const user = await authRef.signInWithEmailAndPassword(email, password)
+
   dispatch({
     type: SIGN_IN_SUCCESS,
-    payload: { user: {} }
+    payload: { user }
   })
 }
 
@@ -63,16 +65,9 @@ export const signUp = (email, password) => async (dispatch) => {
 
 export const fetchUser = () => (dispatch) => {
   authRef.onAuthStateChanged((user) => {
-    if (user) {
-      dispatch({
-        type: FETCH_USER,
-        payload: user
-      })
-    } else {
-      dispatch({
-        type: FETCH_USER,
-        payload: user
-      })
-    }
+    dispatch({
+      type: FETCH_USER,
+      payload: { user }
+    })
   })
 }
