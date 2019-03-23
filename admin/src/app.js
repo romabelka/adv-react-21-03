@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import { Route, NavLink } from 'react-router-dom'
 import AuthPage from './components/routes/auth'
 import AdminPage from './components/routes/admin'
+import AuthorizedRoute from './components/routes/authorized-route'
 
 class App extends Component {
+  static NonAuthorizedAdmin = () => <h1>Not Authorized</h1>
+
   static propTypes = {}
 
   render() {
@@ -25,7 +28,11 @@ class App extends Component {
         </nav>
         <section>
           <Route path="/auth" component={AuthPage} />
-          <Route path="/admin" component={AdminPage} />
+          <AuthorizedRoute
+            path="/admin"
+            AuthorizedComponent={AdminPage}
+            NonAuthorizedComponent={App.NonAuthorizedAdmin}
+          />
         </section>
       </div>
     )

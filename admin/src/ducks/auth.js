@@ -60,8 +60,3 @@ export function signUp(email, password) {
     })
   }
 }
-
-//FB
-onAuthStateChanged((user) => {
-  console.log('---', 'auth state changed', user)
-})
