@@ -1,6 +1,7 @@
 import { Record } from 'immutable'
 import firebase from 'firebase'
 import 'firebase/auth'
+import { authRef } from '../firebase'
 import { appName } from '../config'
 
 /**
@@ -11,6 +12,7 @@ const prefix = `${appName}/${moduleName}`
 
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
+export const FETCH_USER = `${prefix}/SIGN_UP_SUCCESS`
 
 /**
  * Reducer
@@ -23,6 +25,7 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
 
   switch (type) {
+    case FETCH_USER:
     case SIGN_IN_SUCCESS:
     case SIGN_UP_SUCCESS:
       return state.set('user', payload.user)
@@ -42,29 +45,34 @@ export const isAuthorized = (state) => !!state[moduleName].user
  * Action Creators
  * */
 
-export function signIn(email, password) {
-  return (dispatch) => {
-    dispatch({
-      type: SIGN_IN_SUCCESS,
-      payload: { user: {} }
-    })
-  }
+export const signIn = (email, password) => async (dispatch) => {
+  dispatch({
+    type: SIGN_IN_SUCCESS,
+    payload: { user: {} }
+  })
 }
 
-export function signUp(email, password) {
-  return async (dispatch) => {
-    const user = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+export const signUp = (email, password) => async (dispatch) => {
+  const user = await authRef.createUserWithEmailAndPassword(email, password)
 
-    dispatch({
-      type: SIGN_UP_SUCCESS,
-      payload: { user }
-    })
-  }
+  dispatch({
+    type: SIGN_UP_SUCCESS,
+    payload: { user }
+  })
 }
 
-//FB
-firebase.auth().onAuthStateChanged((user) => {
-  console.log('---', 'auth state changed', user)
-})
+export const fetchUser = () => (dispatch) => {
+  authRef.onAuthStateChanged((user) => {
+    if (user) {
+      dispatch({
+        type: FETCH_USER,
+        payload: user
+      })
+    } else {
+      dispatch({
+        type: FETCH_USER,
+        payload: user
+      })
+    }
+  })
+}
