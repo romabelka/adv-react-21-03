@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Persons from './persons'
 
 class AdminPage extends Component {
   static propTypes = {}
@@ -7,6 +8,7 @@ class AdminPage extends Component {
     return (
       <div>
         <h1>Admin</h1>
+        <Persons />
       </div>
     )
   }

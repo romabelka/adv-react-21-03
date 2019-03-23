@@ -34,7 +34,7 @@ class App extends Component {
           <Route path="/auth" component={AuthPage} />
           <Route
             path="/admin"
-            component={authControl(AdminPage, true, '/auth/sing-in')}
+            component={authControl(AdminPage, true, '/auth/sign-in')}
           />
         </section>
       </div>

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import SignInForm from '../auth/sign-in-form'
 import SignUpForm from '../auth/sign-up-form'
 import { signUp, signIn } from '../../ducks/auth'
+import authControl from '../authControl'
 
 class AuthPage extends Component {
   static propTypes = {}
@@ -14,11 +15,15 @@ class AuthPage extends Component {
         <h1>Auth Page</h1>
         <Route
           path="/auth/sign-in"
-          render={() => <SignInForm onSubmit={this.handleSignIn} />}
+          component={authControl(SignInForm, false, '/admin/', {
+            onSubmit: this.handleSignIn
+          })}
         />
         <Route
           path="/auth/sign-up"
-          render={() => <SignUpForm onSubmit={this.handleSignUp} />}
+          render={authControl(SignInForm, false, '/admin/', {
+            onSubmit: this.handleSignUp
+          })}
         />
       </div>
     )

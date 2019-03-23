@@ -4,12 +4,17 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { isAuthorized } from '../ducks/auth'
 
-const authControl = (ExpectedComponent, shouldBeAuthorized, redirectTo) => {
+const authControl = (
+  ExpectedComponent,
+  shouldBeAuthorized,
+  redirectTo,
+  additionalProps
+) => {
   const AuthControlComponent = (props) => {
     const { isAuthorized } = props
 
     if (isAuthorized === shouldBeAuthorized) {
-      return <ExpectedComponent {...props} />
+      return <ExpectedComponent {...props} {...additionalProps} />
     } else if (redirectTo) {
       return <Redirect to={redirectTo} />
     }
