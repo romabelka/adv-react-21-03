@@ -1,6 +1,5 @@
 import { Record } from 'immutable'
-import firebase from 'firebase'
-import 'firebase/auth'
+import { createUser, onAuthStateChanged } from '../modules/api'
 import { appName } from '../config'
 
 /**
@@ -53,9 +52,7 @@ export function signIn(email, password) {
 
 export function signUp(email, password) {
   return async (dispatch) => {
-    const user = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+    const user = await createUser(email, password)
 
     dispatch({
       type: SIGN_UP_SUCCESS,
@@ -63,8 +60,3 @@ export function signUp(email, password) {
     })
   }
 }
-
-//FB
-firebase.auth().onAuthStateChanged((user) => {
-  console.log('---', 'auth state changed', user)
-})
