@@ -28,11 +28,12 @@ class App extends Component {
         </nav>
         <section>
           <Route path="/auth" component={AuthPage} />
-          <AuthorizedRoute
-            path="/admin"
-            AuthorizedComponent={AdminPage}
-            NonAuthorizedComponent={App.NonAuthorizedAdmin}
-          />
+          <Route path="/admin" component={AdminPage} />
+          {/*<AuthorizedRoute*/}
+          {/*path="/admin"*/}
+          {/*AuthorizedComponent={AdminPage}*/}
+          {/*NonAuthorizedComponent={App.NonAuthorizedAdmin}*/}
+          {/*/>*/}
         </section>
       </div>
     )
