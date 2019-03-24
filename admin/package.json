@@ -15,7 +15,9 @@
     "react-scripts": "2.1.8",
     "redux": "^4.0.1",
     "redux-form": "^8.1.0",
-    "redux-logger": "^3.0.6"
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "uid": "0.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
