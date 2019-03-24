@@ -33,9 +33,9 @@ class SignInForm extends Component {
 }
 
 export default reduxForm({
-  form: 'sign-in'
-  // initialValues: {
-  //   email: 'foo',
-  //   password: 'bar'
-  // }
+  form: 'sign-in',
+  initialValues: {
+    email: 'foo',
+    password: 'bar'
+  }
 })(SignInForm)
