@@ -11,6 +11,7 @@ const prefix = `${appName}/${moduleName}`
 
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
+export const USER_STATE_CHANGE = `${prefix}/USER_STATE_CHANGE`
 
 /**
  * Reducer
@@ -25,6 +26,7 @@ export default function reducer(state = new ReducerRecord(), action) {
   switch (type) {
     case SIGN_IN_SUCCESS:
     case SIGN_UP_SUCCESS:
+    case USER_STATE_CHANGE:
       return state.set('user', payload.user)
 
     default:
@@ -51,6 +53,15 @@ export function signIn(email, password) {
   }
 }
 
+export function userStateChange(user) {
+  return (dispatch) => {
+    dispatch({
+      type: USER_STATE_CHANGE,
+      payload: { user }
+    })
+  }
+}
+
 export function signUp(email, password) {
   return async (dispatch) => {
     const user = await firebase
@@ -63,8 +74,3 @@ export function signUp(email, password) {
     })
   }
 }
-
-//FB
-firebase.auth().onAuthStateChanged((user) => {
-  console.log('---', 'auth state changed', user)
-})
