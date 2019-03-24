@@ -1,7 +1,6 @@
 import { Record } from 'immutable'
-import firebase from 'firebase'
-import 'firebase/auth'
 import { appName } from '../config'
+import FB from '../api/fb'
 
 /**
  * Constants
@@ -43,19 +42,19 @@ export const isAuthorized = (state) => !!state[moduleName].user
  * */
 
 export function signIn(email, password) {
+  console.log('--SIGN IN', email, password)
   return (dispatch) => {
+    console.log('--SIGN IN dispatch', email, password)
     dispatch({
       type: SIGN_IN_SUCCESS,
-      payload: { user: {} }
+      payload: { user: { email, password } }
     })
   }
 }
 
 export function signUp(email, password) {
   return async (dispatch) => {
-    const user = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+    const user = await FB.createUserAsync(email, password)
 
     dispatch({
       type: SIGN_UP_SUCCESS,
@@ -65,6 +64,4 @@ export function signUp(email, password) {
 }
 
 //FB
-firebase.auth().onAuthStateChanged((user) => {
-  console.log('---', 'auth state changed', user)
-})
+FB.subscribeOnAuthStateChanged()
