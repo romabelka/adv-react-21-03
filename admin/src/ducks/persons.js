@@ -1,5 +1,6 @@
 import { Record } from 'immutable'
 import { appName } from '../config'
+import { reset as resetReduxForm } from 'redux-form'
 
 /**
  * Constants
@@ -46,4 +47,5 @@ export const addNewPerson = (person) => (dispatch) => {
       person
     }
   })
+  dispatch(resetReduxForm('add-new-person'))
 }
