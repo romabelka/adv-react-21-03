@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
-import { Route, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import AuthPage from './components/routes/auth'
 import AdminPage from './components/routes/admin'
+import List from './components/list'
+import Private from '../src/components/protectedRoutes/Private'
+import Public from '../src/components/protectedRoutes/Public'
 
 class App extends Component {
   static propTypes = {}
@@ -21,11 +24,17 @@ class App extends Component {
                 admin
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/list" activeStyle={{ color: 'red' }}>
+                person list
+              </NavLink>
+            </li>
           </ul>
         </nav>
         <section>
-          <Route path="/auth" component={AuthPage} />
-          <Route path="/admin" component={AdminPage} />
+          <Public path="/auth" component={AuthPage} />
+          <Private path="/admin" component={AdminPage} />
+          <Private path="/list" component={List} />
         </section>
       </div>
     )
