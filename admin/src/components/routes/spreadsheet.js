@@ -16,18 +16,22 @@ class SpreadsheetPage extends Component {
         <h1>Spreadsheet</h1>
         <AddUserForm addUser={this.handleAddUser} />
         <table style={{ borderSpacing: 0, marginTop: '20px' }}>
-          <tr>
-            <th style={cellStyle}>First name</th>
-            <th style={cellStyle}>Last name</th>
-            <th style={cellStyle}>Email</th>
-          </tr>
-          {list.map((item) => (
-            <tr key={item.email} style={cellStyle}>
-              <td style={cellStyle}>{item.firstname}</td>
-              <td style={cellStyle}>{item.lastname}</td>
-              <td style={cellStyle}>{item.email}</td>
+          <thead>
+            <tr>
+              <th style={cellStyle}>First name</th>
+              <th style={cellStyle}>Last name</th>
+              <th style={cellStyle}>Email</th>
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {list.map((item) => (
+              <tr key={item.email} style={cellStyle}>
+                <td style={cellStyle}>{item.firstname}</td>
+                <td style={cellStyle}>{item.lastname}</td>
+                <td style={cellStyle}>{item.email}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     )
