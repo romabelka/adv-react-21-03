@@ -22,7 +22,10 @@ export default function reducer(state = new ReducerRecord(), action) {
 
   switch (type) {
     case ADD_NEW:
-      return state.persons.push(payload.person)
+      return {
+        ...state,
+        persons: state.persons.concat(payload.person)
+      }
     default:
       return state
   }
@@ -36,15 +39,11 @@ export default function reducer(state = new ReducerRecord(), action) {
  * Action Creators
  * */
 
-export const addNewPerson = (firstName, lastName, email) => (dispatch) => {
+export const addNewPerson = (person) => (dispatch) => {
   dispatch({
     type: ADD_NEW,
     payload: {
-      person: {
-        firstName,
-        lastName,
-        email
-      }
+      person
     }
   })
 }

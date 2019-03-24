@@ -19,7 +19,7 @@ const authControl = (
       return <Redirect to={redirectTo} />
     }
 
-    return ''
+    return null
   }
 
   return connect((state) => ({

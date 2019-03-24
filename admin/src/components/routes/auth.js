@@ -21,7 +21,7 @@ class AuthPage extends Component {
         />
         <Route
           path="/auth/sign-up"
-          render={authControl(SignInForm, false, '/admin/', {
+          component={authControl(SignUpForm, false, '/admin/', {
             onSubmit: this.handleSignUp
           })}
         />
