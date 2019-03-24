@@ -15,8 +15,6 @@ class AdminPage extends Component {
   }
 }
 
-export default Authorized(
-  connect((state) => ({
-    isAuthorized: isAuthorized(state)
-  }))(AdminPage)
-)
+export default connect((state) => ({
+  isAuthorized: isAuthorized(state)
+}))(Authorized(AdminPage))
