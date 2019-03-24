@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { isAuthorized } from './ducks/auth'
 import AuthPage from './components/routes/auth'
 import AdminPage from './components/routes/admin'
+import SpreadsheetPage from './components/routes/spreadsheet'
 import notAuthPage from './components/common/notAuth'
 
 class App extends Component {
@@ -28,11 +29,17 @@ class App extends Component {
                 admin
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/spreadsheet" activeStyle={{ color: 'red' }}>
+                spreadsheet
+              </NavLink>
+            </li>
           </ul>
         </nav>
         <section>
           <Route path="/auth" component={AuthPage} />
           <Route path="/admin" component={protectedPage(AdminPage)} />
+          <Route path="/spreadsheet" component={SpreadsheetPage} />
         </section>
       </div>
     )
