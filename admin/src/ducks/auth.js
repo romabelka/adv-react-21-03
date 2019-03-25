@@ -77,3 +77,5 @@ export function signUp(email, password) {
       })
     )
 }
+
+export function* saga() {}

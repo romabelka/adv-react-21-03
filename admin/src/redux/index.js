@@ -6,8 +6,7 @@ import createSagaMiddleware from 'redux-saga'
 import { init as initAuth } from '../ducks/auth'
 import reducer from './reducer'
 import history from '../history'
-
-import { saga } from '../ducks/people'
+import saga from './saga'
 
 const sagaMiddleware = createSagaMiddleware()
 
