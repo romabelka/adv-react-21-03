@@ -1,4 +1,5 @@
 import { appName } from '../config'
+import { all, takeEvery, call, put } from 'redux-saga/effects'
 import { Record } from 'immutable'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -10,6 +11,8 @@ export const moduleName = 'auth'
 const prefix = `${appName}/${moduleName}`
 
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`
+export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`
+export const SIGN_UP_START = `${prefix}/SIGN_UP_START`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
 
 /**
@@ -68,6 +71,7 @@ export function signIn(email, password) {
     )
 }
 
+/*
 export function signUp(email, password) {
   return (dispatch) =>
     api.signUp(email, password).then((user) =>
@@ -77,5 +81,23 @@ export function signUp(email, password) {
       })
     )
 }
+*/
+export const signUp = (email, password) => ({
+  type: SIGN_UP_REQUEST,
+  payload: { email, password }
+})
 
-export function* saga() {}
+export function* signUpSaga({ payload }) {
+  yield put({ type: SIGN_UP_START })
+
+  const user = yield call(api.signUp, payload.email, payload.password)
+
+  yield put({
+    type: SIGN_UP_SUCCESS,
+    payload: { user }
+  })
+}
+
+export function* saga() {
+  yield all([takeEvery(SIGN_UP_REQUEST, signUpSaga)])
+}
