@@ -1,7 +1,7 @@
-import { Record } from 'immutable'
-import firebase from 'firebase'
-import 'firebase/auth'
 import { appName } from '../config'
+import { Record } from 'immutable'
+import { createSelector } from 'reselect'
+import api from '../services/api'
 
 /**
  * Constants
@@ -36,35 +36,44 @@ export default function reducer(state = new ReducerRecord(), action) {
  * Selectors
  * */
 
-export const isAuthorized = (state) => !!state[moduleName].user
+export const userSelector = (state) => state[moduleName].user
+export const isAuthorizedSelector = createSelector(
+  userSelector,
+  (user) => !!user
+)
+
+/**
+ * Init logic
+ */
+
+export function init(store) {
+  api.onAuthStateChanged((user) => {
+    store.dispatch({
+      type: SIGN_IN_SUCCESS,
+      payload: { user }
+    })
+  })
+}
 
 /**
  * Action Creators
  * */
-
 export function signIn(email, password) {
-  return (dispatch) => {
-    dispatch({
-      type: SIGN_IN_SUCCESS,
-      payload: { user: {} }
-    })
-  }
+  return (dispatch) =>
+    api.signIn(email, password).then((user) =>
+      dispatch({
+        type: SIGN_IN_SUCCESS,
+        payload: { user }
+      })
+    )
 }
 
 export function signUp(email, password) {
-  return async (dispatch) => {
-    const user = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-
-    dispatch({
-      type: SIGN_UP_SUCCESS,
-      payload: { user }
-    })
-  }
+  return (dispatch) =>
+    api.signUp(email, password).then((user) =>
+      dispatch({
+        type: SIGN_UP_SUCCESS,
+        payload: { user }
+      })
+    )
 }
-
-//FB
-firebase.auth().onAuthStateChanged((user) => {
-  console.log('---', 'auth state changed', user)
-})
