@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { reduxForm, Field } from 'redux-form'
-import { connect, compose } from 'react-redux'
 
 class SignInForm extends Component {
   static propTypes = {}
