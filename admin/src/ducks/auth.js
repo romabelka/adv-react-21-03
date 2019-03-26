@@ -1,5 +1,5 @@
 import { appName } from '../config'
-import { all, takeEvery, call, put, take } from 'redux-saga/effects'
+import { all, takeEvery, call, put, take, delay } from 'redux-saga/effects'
 import { Record } from 'immutable'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -10,10 +10,15 @@ import api from '../services/api'
 export const moduleName = 'auth'
 const prefix = `${appName}/${moduleName}`
 
+const NUM_OF_FAILURE_SIGN_IN_BLOCKING = 3
+const DELAY_AFTER_BLOCKING_SIGN_IN = 3000
+
 export const SIGN_IN_REQUEST = `${prefix}/SIGN_IN_REQUEST`
 export const SIGN_IN_START = `${prefix}/SIGN_IN_START`
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`
 export const SIGN_IN_ERROR = `${prefix}/SIGN_IN_ERROR`
+export const SIGN_IN_BLOCKED = `${prefix}/SIGN_IN_BLOCKED`
+export const SIGN_IN_UNBLOCKED = `${prefix}/SIGN_IN_UNBLOCKED`
 export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`
 export const SIGN_UP_START = `${prefix}/SIGN_UP_START`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
@@ -116,24 +121,72 @@ export function* signUpSaga({ payload }) {
   }
 }
 
+export function* maxCountsOfCall(saga, maxCalls) {
+  let returnedValue
+  for (let i = 0; i < maxCalls; i++) {
+    returnedValue = yield call(saga)
+  }
+
+  return returnedValue
+}
+
+export function* singInRequest() {
+  const { payload } = yield take(SIGN_IN_REQUEST)
+
+  yield put({ type: SIGN_IN_START })
+
+  try {
+    const user = yield call(api.signIn, payload.email, payload.password)
+
+    yield put({
+      type: SIGN_IN_SUCCESS,
+      payload: { user }
+    })
+
+    return user
+  } catch (error) {
+    yield put({
+      type: SIGN_IN_ERROR,
+      error
+    })
+  }
+}
+
 export function* signInSaga() {
+  // for(let i = 0; i < 3; i++) {
+  //   const { payload } = yield take(SIGN_IN_REQUEST)
+
+  //   yield put({ type: SIGN_IN_START })
+
+  //   try {
+  //     const user = yield call(api.signIn, payload.email, payload.password)
+
+  //     yield put({
+  //       type: SIGN_IN_SUCCESS,
+  //       payload: { user }
+  //     })
+  //   } catch (error) {
+  //     yield put({
+  //       type: SIGN_IN_ERROR,
+  //       error
+  //     })
+  //   }
+  // }
   while (true) {
-    const { payload } = yield take(SIGN_IN_REQUEST)
+    const user = yield call(
+      maxCountsOfCall,
+      singInRequest,
+      NUM_OF_FAILURE_SIGN_IN_BLOCKING
+    )
 
-    yield put({ type: SIGN_IN_START })
-
-    try {
-      const user = yield call(api.signIn, payload.email, payload.password)
-
+    if (!user) {
       yield put({
-        type: SIGN_IN_SUCCESS,
-        payload: { user }
+        type: SIGN_IN_BLOCKED
       })
-    } catch (error) {
-      yield put({
-        type: SIGN_IN_ERROR,
-        error
-      })
+
+      yield delay(DELAY_AFTER_BLOCKING_SIGN_IN)
+
+      yield put({ type: 'SIGN_IN_UNBLOCKED' })
     }
   }
 }
