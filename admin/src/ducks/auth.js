@@ -1,5 +1,13 @@
 import { appName } from '../config'
-import { all, takeEvery, call, put, take } from 'redux-saga/effects'
+import {
+  all,
+  takeEvery,
+  call,
+  put,
+  take,
+  delay,
+  fork
+} from 'redux-saga/effects'
 import { Record } from 'immutable'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -18,12 +26,14 @@ export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`
 export const SIGN_UP_START = `${prefix}/SIGN_UP_START`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
+export const TIME_PASSED_AFTER_SIGN_IN_ERROR = `${prefix}/TIME_PASSED_AFTER_SIGN_IN_ERROR`
 
 /**
  * Reducer
  * */
 export const ReducerRecord = Record({
-  user: null
+  user: null,
+  numberOfRecentErrors: 0
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -32,8 +42,14 @@ export default function reducer(state = new ReducerRecord(), action) {
   switch (type) {
     case SIGN_IN_SUCCESS:
     case SIGN_UP_SUCCESS:
-      return state.set('user', payload.user)
-
+      return state.set('user', payload.user).set('numberOfRecentErrors', 0)
+    case SIGN_IN_ERROR:
+      return state.set('numberOfRecentErrors', state.numberOfRecentErrors + 1)
+    case TIME_PASSED_AFTER_SIGN_IN_ERROR:
+      return state.set(
+        'numberOfRecentErrors',
+        Math.max(state.numberOfRecentErrors - 1, 0)
+      )
     default:
       return state
   }
@@ -48,6 +64,8 @@ export const isAuthorizedSelector = createSelector(
   userSelector,
   (user) => !!user
 )
+export const wasToManyRecentAuthErrors = (state) =>
+  state[moduleName].numberOfRecentErrors >= 3
 
 /**
  * Init logic
@@ -98,6 +116,10 @@ export const signIn = (email, password) => ({
   payload: { email, password }
 })
 
+export const passTimeAfterError = () => ({
+  type: TIME_PASSED_AFTER_SIGN_IN_ERROR
+})
+
 export function* signUpSaga({ payload }) {
   yield put({ type: SIGN_UP_START })
 
@@ -117,6 +139,7 @@ export function* signUpSaga({ payload }) {
 }
 
 export function* signInSaga() {
+  yield fork(toManySignErrorsSaga)
   while (true) {
     const { payload } = yield take(SIGN_IN_REQUEST)
 
@@ -136,6 +159,15 @@ export function* signInSaga() {
       })
     }
   }
+}
+
+export function* toManySignErrorsSaga() {
+  yield takeEvery(SIGN_IN_ERROR, resetErrorAfterTimeout)
+}
+
+function* resetErrorAfterTimeout() {
+  yield delay(5000)
+  yield put(passTimeAfterError())
 }
 
 export function* saga() {

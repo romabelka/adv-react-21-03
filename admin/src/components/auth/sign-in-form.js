@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { reduxForm, Field } from 'redux-form'
+import { wasToManyRecentAuthErrors } from '../../ducks/auth'
+import { connect } from 'react-redux'
 
 class SignInForm extends Component {
   static propTypes = {}
@@ -15,7 +17,7 @@ class SignInForm extends Component {
           Password:
           <Field component="input" name="password" type="password" />
         </div>
-        <button>Sign In</button>
+        <button disabled={this.props.isFormDisabled}>Sign In</button>
       </form>
     )
   }
@@ -27,4 +29,8 @@ export default reduxForm({
     email: 'foo',
     password: 'bar'
   }
-})(SignInForm)
+})(
+  connect((state) => ({ isFormDisabled: wasToManyRecentAuthErrors(state) }))(
+    SignInForm
+  )
+)
