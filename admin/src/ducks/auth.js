@@ -65,7 +65,7 @@ export const isAuthorizedSelector = createSelector(
   (user) => !!user
 )
 export const wasToManyRecentAuthErrors = (state) =>
-  state[moduleName].numberOfRecentErrors === 3
+  state[moduleName].numberOfRecentErrors >= 3
 
 /**
  * Init logic
@@ -161,11 +161,13 @@ export function* signInSaga() {
   }
 }
 
-function* toManySignErrorsSaga() {
-  yield takeEvery(SIGN_IN_ERROR, function*() {
-    yield delay(5000)
-    yield put(passTimeAfterError())
-  })
+export function* toManySignErrorsSaga() {
+  yield takeEvery(SIGN_IN_ERROR, resetErrorAfterTimeout)
+}
+
+function* resetErrorAfterTimeout() {
+  yield delay(5000)
+  yield put(passTimeAfterError())
 }
 
 export function* saga() {
