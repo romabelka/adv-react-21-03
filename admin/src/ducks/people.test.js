@@ -4,7 +4,7 @@ import { ADD_PERSON, addPerson, addPersonSaga } from './people'
 import { generateId } from './utils'
 
 describe('People Duck', () => {
-  describe('addPersonSaga', () => {
+  describe('loadEventsSaga', () => {
     it('should add a person', () => {
       const person = {
         firstName: 'Roman',
