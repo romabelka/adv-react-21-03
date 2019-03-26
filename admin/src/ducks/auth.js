@@ -11,6 +11,7 @@ export const moduleName = 'auth'
 const prefix = `${appName}/${moduleName}`
 
 export const SIGN_IN_REQUEST = `${prefix}/SIGN_IN_REQUEST`
+export const SIGN_IN_FORBIDDEN = `${prefix}/SIGN_IN_FORBIDDEN`
 export const SIGN_IN_START = `${prefix}/SIGN_IN_START`
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`
 export const SIGN_IN_ERROR = `${prefix}/SIGN_IN_ERROR`
@@ -23,7 +24,8 @@ export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
  * Reducer
  * */
 export const ReducerRecord = Record({
-  user: null
+  user: null,
+  isSignInForbidden: false
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -32,8 +34,9 @@ export default function reducer(state = new ReducerRecord(), action) {
   switch (type) {
     case SIGN_IN_SUCCESS:
     case SIGN_UP_SUCCESS:
-      return state.set('user', payload.user)
-
+      return state.set('user', payload.user).set('isSignInForbidden', false)
+    case SIGN_IN_FORBIDDEN:
+      return state.set('isSignInForbidden', true)
     default:
       return state
   }
@@ -48,6 +51,8 @@ export const isAuthorizedSelector = createSelector(
   userSelector,
   (user) => !!user
 )
+
+export const isSignInForbidden = (state) => state[moduleName].isSignInForbidden
 
 /**
  * Init logic
@@ -65,29 +70,7 @@ export function init(store) {
 /**
  * Action Creators
  * */
-/*
-export function signIn(email, password) {
-  return (dispatch) =>
-    api.signIn(email, password).then((user) =>
-      dispatch({
-        type: SIGN_IN_SUCCESS,
-        payload: { user }
-      })
-    )
-}
-*/
 
-/*
-export function signUp(email, password) {
-  return (dispatch) =>
-    api.signUp(email, password).then((user) =>
-      dispatch({
-        type: SIGN_UP_SUCCESS,
-        payload: { user }
-      })
-    )
-}
-*/
 export const signUp = (email, password) => ({
   type: SIGN_UP_REQUEST,
   payload: { email, password }
@@ -117,7 +100,15 @@ export function* signUpSaga({ payload }) {
 }
 
 export function* signInSaga() {
+  let failedAttemptsCount = 0
   while (true) {
+    console.log(`${failedAttemptsCount}`)
+    if (failedAttemptsCount >= 3) {
+      console.log(`forbidden`)
+      yield put({ type: SIGN_IN_FORBIDDEN })
+      return
+    }
+
     const { payload } = yield take(SIGN_IN_REQUEST)
 
     yield put({ type: SIGN_IN_START })
@@ -129,11 +120,15 @@ export function* signInSaga() {
         type: SIGN_IN_SUCCESS,
         payload: { user }
       })
+
+      failedAttemptsCount = 0
     } catch (error) {
       yield put({
         type: SIGN_IN_ERROR,
         error
       })
+
+      failedAttemptsCount++
     }
   }
 }
