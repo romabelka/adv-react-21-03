@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import { reduxForm, Field } from 'redux-form'
+import { connect, compose } from 'react-redux'
 
 class SignInForm extends Component {
   static propTypes = {}
 
   render() {
-    return (
+    const { disabled } = this.props
+    const form = (
       <form onSubmit={this.props.handleSubmit}>
         <div>
           Email:
@@ -18,6 +20,14 @@ class SignInForm extends Component {
         <button>Sign In</button>
       </form>
     )
+
+    const needUpdate = (
+      <div>
+        <h3> you need refresh page, limit sing in</h3>
+      </div>
+    )
+
+    return disabled ? needUpdate : form
   }
 }
 
