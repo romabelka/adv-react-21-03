@@ -19,6 +19,7 @@ export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`
 export const SIGN_UP_START = `${prefix}/SIGN_UP_START`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
+export const SIGN_IN_MAX_FAILED_ATTEMPTS = 3
 
 /**
  * Reducer
@@ -102,33 +103,29 @@ export function* signUpSaga({ payload }) {
 export function* signInSaga() {
   let failedAttemptsCount = 0
   while (true) {
-    console.log(`${failedAttemptsCount}`)
-    if (failedAttemptsCount >= 3) {
-      console.log(`forbidden`)
+    if (failedAttemptsCount >= SIGN_IN_MAX_FAILED_ATTEMPTS) {
       yield put({ type: SIGN_IN_FORBIDDEN })
-      return
-    }
+    } else {
+      const { payload } = yield take(SIGN_IN_REQUEST)
+      yield put({ type: SIGN_IN_START })
 
-    const { payload } = yield take(SIGN_IN_REQUEST)
+      try {
+        const user = yield call(api.signIn, payload.email, payload.password)
 
-    yield put({ type: SIGN_IN_START })
+        yield put({
+          type: SIGN_IN_SUCCESS,
+          payload: { user }
+        })
 
-    try {
-      const user = yield call(api.signIn, payload.email, payload.password)
+        failedAttemptsCount = 0
+      } catch (error) {
+        yield put({
+          type: SIGN_IN_ERROR,
+          error
+        })
 
-      yield put({
-        type: SIGN_IN_SUCCESS,
-        payload: { user }
-      })
-
-      failedAttemptsCount = 0
-    } catch (error) {
-      yield put({
-        type: SIGN_IN_ERROR,
-        error
-      })
-
-      failedAttemptsCount++
+        failedAttemptsCount++
+      }
     }
   }
 }
