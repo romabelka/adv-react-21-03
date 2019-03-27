@@ -1,5 +1,5 @@
 import { appName } from '../config'
-import { all, takeEvery, call, put, take } from 'redux-saga/effects'
+import { all, takeEvery, call, put, take, select } from 'redux-saga/effects'
 import { Record } from 'immutable'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -23,7 +23,8 @@ export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
  * Reducer
  * */
 export const ReducerRecord = Record({
-  user: null
+  user: null,
+  loginAttempt: 0
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -31,8 +32,15 @@ export default function reducer(state = new ReducerRecord(), action) {
 
   switch (type) {
     case SIGN_IN_SUCCESS:
+      return state.merge({
+        user: payload.user,
+        loginAttempt: payload.attempt
+      })
     case SIGN_UP_SUCCESS:
       return state.set('user', payload.user)
+
+    case SIGN_IN_ERROR:
+      return state.set('loginAttempt', payload.attempt)
 
     default:
       return state
@@ -44,6 +52,7 @@ export default function reducer(state = new ReducerRecord(), action) {
  * */
 
 export const userSelector = (state) => state[moduleName].user
+export const attemptSelector = (state) => state[moduleName].loginAttempt
 export const isAuthorizedSelector = createSelector(
   userSelector,
   (user) => !!user
@@ -119,6 +128,9 @@ export function* signUpSaga({ payload }) {
 export function* signInSaga() {
   while (true) {
     const { payload } = yield take(SIGN_IN_REQUEST)
+    const attemptCount = yield select(attemptSelector)
+
+    if (attemptCount >= 3) return
 
     yield put({ type: SIGN_IN_START })
 
@@ -127,11 +139,12 @@ export function* signInSaga() {
 
       yield put({
         type: SIGN_IN_SUCCESS,
-        payload: { user }
+        payload: { user, attempt: 0 }
       })
     } catch (error) {
       yield put({
         type: SIGN_IN_ERROR,
+        payload: { attempt: attemptCount + 1 },
         error
       })
     }
