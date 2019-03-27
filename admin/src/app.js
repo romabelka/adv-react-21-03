@@ -1,44 +1,45 @@
 import React, { Component } from 'react'
-import { NavLink } from 'react-router-dom'
-import AuthPage from './components/routes/auth'
+import { NavLink, Route } from 'react-router-dom'
 import AdminPage from './components/routes/admin'
-import List from './components/list'
-import Private from '../src/components/protectedRoutes/Private'
-import Public from '../src/components/protectedRoutes/Public'
+import AuthPage from './components/routes/auth'
+import ProtectedRoute from './components/common/protected-route'
 
-class App extends Component {
-  static propTypes = {}
-
+export default class App extends Component {
+  get menu() {
+    return (
+      <nav>
+        <div>
+          <NavLink to="/admin/people" activeStyle={{ color: 'red' }}>
+            People List
+          </NavLink>
+        </div>
+        <div>
+          <NavLink to="/auth/sign-in" activeStyle={{ color: 'red' }}>
+            Sign In
+          </NavLink>
+        </div>
+        <div>
+          <NavLink to="/auth/sign-up" activeStyle={{ color: 'red' }}>
+            Sign Up
+          </NavLink>
+        </div>
+        <div>
+          <NavLink to="/auth/events" activeStyle={{ color: 'red' }}>
+            Events table
+          </NavLink>
+        </div>
+      </nav>
+    )
+  }
   render() {
     return (
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <NavLink to="/auth" activeStyle={{ color: 'red' }}>
-                auth
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin" activeStyle={{ color: 'red' }}>
-                admin
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/list" activeStyle={{ color: 'red' }}>
-                person list
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
-        <section>
-          <Public path="/auth" component={AuthPage} />
-          <Private path="/admin" component={AdminPage} />
-          <Private path="/list" component={List} />
-        </section>
-      </div>
+      <>
+        {this.menu}
+        <div>
+          <ProtectedRoute path="/admin" component={AdminPage} />
+          <Route path="/auth" component={AuthPage} />
+        </div>
+      </>
     )
   }
 }
-
-export default App
