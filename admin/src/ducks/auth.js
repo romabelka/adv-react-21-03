@@ -23,7 +23,8 @@ export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
  * Reducer
  * */
 export const ReducerRecord = Record({
-  user: null
+  user: null,
+  count: 3
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -33,7 +34,8 @@ export default function reducer(state = new ReducerRecord(), action) {
     case SIGN_IN_SUCCESS:
     case SIGN_UP_SUCCESS:
       return state.set('user', payload.user)
-
+    case SIGN_IN_ERROR:
+      return state.set('count', state.get('count') - 1)
     default:
       return state
   }
@@ -44,6 +46,7 @@ export default function reducer(state = new ReducerRecord(), action) {
  * */
 
 export const userSelector = (state) => state[moduleName].user
+
 export const isAuthorizedSelector = createSelector(
   userSelector,
   (user) => !!user
