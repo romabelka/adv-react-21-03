@@ -9,7 +9,7 @@ export default [
   },
   {
     title: "O'Reilly Velocity Conference",
-    url: 'http://conferences.oreilly.com/velocity/vl-ca',
+    url: 'http://events.oreilly.com/velocity/vl-ca',
     where: 'San Jose, CA',
     when: 'January 19-22, 2017',
     month: 'January',
@@ -169,7 +169,7 @@ export default [
   },
   {
     title: 'JS Remote Conf',
-    url: 'https://devchat.tv/conferences/js-remote-conf-2017',
+    url: 'https://devchat.tv/events/js-remote-conf-2017',
     where: 'Online',
     when: 'March 15th–16th, 2017',
     month: 'March',
@@ -249,7 +249,7 @@ export default [
   },
   {
     title: 'AlterConf',
-    url: 'https://www.alterconf.com/conferences/london-england',
+    url: 'https://www.alterconf.com/events/london-england',
     where: 'London, UK',
     when: 'April 1, 2017',
     month: 'April',
@@ -378,7 +378,7 @@ export default [
   },
   {
     title: 'OSCON',
-    url: 'http://conferences.oreilly.com/oscon/oscon-tx',
+    url: 'http://events.oreilly.com/oscon/oscon-tx',
     where: 'Austin, TX',
     when: 'May 8-11, 2017',
     month: 'May',
@@ -594,7 +594,7 @@ export default [
   },
   {
     title: "O'Reilly Fluent",
-    url: 'http://conferences.oreilly.com/fluent/fl-ca',
+    url: 'http://events.oreilly.com/fluent/fl-ca',
     where: 'San Jose, CA',
     when: 'June 19-22, 2017',
     month: 'June',
@@ -1102,7 +1102,7 @@ export default [
   },
   {
     title: 'O’Reilly Fluent Conference 2016',
-    url: 'http://conferences.oreilly.com/fluent/javascript-html-us',
+    url: 'http://events.oreilly.com/fluent/javascript-html-us',
     where: 'San Francisco, CA',
     when: 'March 8–10, 2016',
     month: 'March',
@@ -1737,7 +1737,7 @@ export default [
   },
   {
     title: 'OSCON',
-    url: 'http://conferences.oreilly.com/oscon/open-source-us',
+    url: 'http://events.oreilly.com/oscon/open-source-us',
     where: 'Austin, TX, USA',
     when: 'May 18–19, 2016',
     month: 'May',
@@ -2073,7 +2073,7 @@ export default [
   },
   {
     title: 'FullStack 2016',
-    url: 'https://skillsmatter.com/conferences/7278-fullstack',
+    url: 'https://skillsmatter.com/events/7278-fullstack',
     where: 'England, London',
     when: 'July 13–15, 2016',
     month: 'July',
