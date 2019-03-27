@@ -1,4 +1,4 @@
-import conferences from './conferences'
+//import conferences from './conferences'
 //import firebase from 'firebase/app'
 //import 'firebase/firestore'
 //export function saveEventsToFB() {
