@@ -121,18 +121,35 @@ export function* signUpSaga({ payload }) {
   }
 }
 
-export function* maxCountsOfCall(saga, maxCalls) {
-  let returnedValue
-  for (let i = 0; i < maxCalls; i++) {
-    returnedValue = yield call(saga)
-  }
+export function* maxCountsOfCall(action, saga, maxCalls, callback) {
+  while (true) {
+    let returnedValue
+    for (let i = 0; i < maxCalls; i++) {
+      const { payload } = yield take(action)
+      returnedValue = yield call(saga, payload)
 
-  return returnedValue
+      if (returnedValue) {
+        break
+      }
+    }
+
+    yield call(callback, returnedValue)
+  }
 }
 
-export function* singInRequest() {
-  const { payload } = yield take(SIGN_IN_REQUEST)
+export function* signInBlockCallback(user) {
+  if (!user) {
+    yield put({
+      type: SIGN_IN_BLOCKED
+    })
 
+    yield delay(DELAY_AFTER_BLOCKING_SIGN_IN)
+
+    yield put({ type: SIGN_IN_UNBLOCKED })
+  }
+}
+
+export function* signInSaga(payload) {
   yield put({ type: SIGN_IN_START })
 
   try {
@@ -152,32 +169,36 @@ export function* singInRequest() {
   }
 }
 
-export function* signInSaga() {
-  // for(let i = 0; i < 3; i++) {
-  //   const { payload } = yield take(SIGN_IN_REQUEST)
+// It's working too. But I wanted to write clear function to restrict calling above
 
-  //   yield put({ type: SIGN_IN_START })
-
-  //   try {
-  //     const user = yield call(api.signIn, payload.email, payload.password)
-
-  //     yield put({
-  //       type: SIGN_IN_SUCCESS,
-  //       payload: { user }
-  //     })
-  //   } catch (error) {
-  //     yield put({
-  //       type: SIGN_IN_ERROR,
-  //       error
-  //     })
-  //   }
-  // }
+export function* signInSagaLoop() {
   while (true) {
-    const user = yield call(
-      maxCountsOfCall,
-      singInRequest,
-      NUM_OF_FAILURE_SIGN_IN_BLOCKING
-    )
+    let user
+    const maxCalls = NUM_OF_FAILURE_SIGN_IN_BLOCKING
+
+    for (let i = 0; i < maxCalls; i++) {
+      const { payload } = yield take(SIGN_IN_REQUEST)
+
+      yield put({ type: SIGN_IN_START })
+
+      try {
+        user = yield call(api.signIn, payload.email, payload.password)
+
+        yield put({
+          type: SIGN_IN_SUCCESS,
+          payload: { user }
+        })
+
+        if (user) {
+          break
+        }
+      } catch (error) {
+        yield put({
+          type: SIGN_IN_ERROR,
+          error
+        })
+      }
+    }
 
     if (!user) {
       yield put({
@@ -186,11 +207,20 @@ export function* signInSaga() {
 
       yield delay(DELAY_AFTER_BLOCKING_SIGN_IN)
 
-      yield put({ type: 'SIGN_IN_UNBLOCKED' })
+      yield put({ type: SIGN_IN_UNBLOCKED })
     }
   }
 }
 
 export function* saga() {
-  yield all([takeEvery(SIGN_UP_REQUEST, signUpSaga), signInSaga()])
+  yield all([
+    takeEvery(SIGN_UP_REQUEST, signUpSaga),
+    // signInSagaLoop(),
+    maxCountsOfCall(
+      SIGN_IN_REQUEST,
+      signInSaga,
+      NUM_OF_FAILURE_SIGN_IN_BLOCKING,
+      signInBlockCallback
+    )
+  ])
 }
