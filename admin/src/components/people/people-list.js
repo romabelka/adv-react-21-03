@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { peopleSelector } from '../../ducks/people'
+import PersonCard from './person-card'
 
 class PeopleList extends Component {
   static propTypes = {}
@@ -10,7 +11,7 @@ class PeopleList extends Component {
       <div>
         {this.props.people.map((person) => (
           <li key={person.id}>
-            {person.firstName}: {person.email}
+            <PersonCard person={person} />
           </li>
         ))}
       </div>

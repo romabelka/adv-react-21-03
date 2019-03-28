@@ -1,5 +1,5 @@
 import React from 'react'
-import Enzyme, { shallow } from 'enzyme'
+import Enzyme, { shallow, mount } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
 import { EventsTable } from './events-table'
 import Loader from '../common/loader'
@@ -26,13 +26,16 @@ describe('EventsTable', () => {
 
   it('should select an event', () => {
     const mockFn = jest.fn()
-    const container = shallow(
-      <EventsTable events={events} selectEvent={mockFn} />,
-      { disableLifecycleMethods: true }
+    const container = mount(
+      <EventsTable
+        events={events}
+        selectEvent={mockFn}
+        fetchAllEvents={() => {}}
+      />
     )
     const itemIndex = Math.floor(Math.random() * events.length)
     container
-      .find('tr')
+      .find('.test--event-list__item')
       .at(itemIndex)
       .simulate('click')
 
