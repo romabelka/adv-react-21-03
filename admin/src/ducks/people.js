@@ -5,6 +5,12 @@ import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
 import { generateId } from '../services/utils'
 
+const defaultPeople = new List([
+  { id: 1, firstName: 'Roma', email: 'test@example.com' },
+  { id: 2, firstName: 'Foo', email: 'foo@example.com' },
+  { id: 3, firstName: 'Bar', email: 'bar@example.com' }
+])
+
 /**
  * Constants
  * */
@@ -12,12 +18,13 @@ export const moduleName = 'people'
 const prefix = `${appName}/${moduleName}`
 export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
 export const ADD_PERSON = `${prefix}/ADD_PERSON`
+export const ADD_PERSON_TO_EVENT = `${prefix}/ADD_PERSON_TO_EVENT`
 
 /**
  * Reducer
  * */
 const ReducerState = Record({
-  entities: new List([])
+  entities: defaultPeople
 })
 
 const PersonRecord = Record({
@@ -57,6 +64,11 @@ export const peopleSelector = createSelector(
 export const addPerson = (person) => ({
   type: ADD_PERSON_REQUEST,
   payload: { person }
+})
+
+export const addPersonToEvent = (personId, eventId) => ({
+  type: ADD_PERSON_TO_EVENT,
+  payload: { personId, eventId }
 })
 
 /**
