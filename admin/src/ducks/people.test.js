@@ -1,7 +1,7 @@
 import { put, call } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { ADD_PERSON, addPerson, addPersonSaga } from './people'
-import { generateId } from './utils'
+import { generateId } from '../services/utils'
 
 describe('People Duck', () => {
   describe('addPersonSaga', () => {

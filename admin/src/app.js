@@ -14,6 +14,11 @@ export default class App extends Component {
           </NavLink>
         </div>
         <div>
+          <NavLink to="/admin/events" activeStyle={{ color: 'red' }}>
+            Event List
+          </NavLink>
+        </div>
+        <div>
           <NavLink to="/auth/sign-in" activeStyle={{ color: 'red' }}>
             Sign In
           </NavLink>

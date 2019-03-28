@@ -13,7 +13,18 @@ class ApiService {
   signUp = (email, password) =>
     this.fb.auth().createUserWithEmailAndPassword(email, password)
 
+  fetchAllEvents = () =>
+    this.fb
+      .firestore()
+      .collection('events')
+      .get()
+      .then(resToEntities)
+
   onAuthStateChanged = (callback) => this.fb.auth().onAuthStateChanged(callback)
+}
+
+function resToEntities(res) {
+  return res.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
 }
 
 export default new ApiService()

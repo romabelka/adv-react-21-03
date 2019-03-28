@@ -3,7 +3,7 @@ import { Record, List } from 'immutable'
 import { takeEvery, put, call } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
-import { generateId } from './utils'
+import { generateId } from '../services/utils'
 
 /**
  * Constants
