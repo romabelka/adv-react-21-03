@@ -1,35 +1,47 @@
 import React, { Component } from 'react'
 import { DragSource } from 'react-dnd'
+import { getEmptyImage } from 'react-dnd-html5-backend'
 
 class EventRow extends Component {
-  static propTypes = {}
+  componentDidMount() {
+    this.props.connectDragPreview(getEmptyImage(), {
+      captureDraggingState: true
+    })
+  }
 
   render() {
-    const { event, handleClick, dragSource, isDragging } = this.props
-    return dragSource(
-      <tr
-        onClick={() => handleClick(event.id)}
-        style={{ opacity: isDragging ? 0.2 : 1 }}
-        className="test--event-list__item"
-      >
-        <td>{event.title}</td>
-        <td>{event.when}</td>
-        <td>{event.where}</td>
-      </tr>
+    const { event, handleClick, isDragging, connectDragSource } = this.props
+    return (
+      <>
+        <tr
+          ref={connectDragSource}
+          onClick={() => handleClick(event.id)}
+          style={{ opacity: isDragging ? 0.2 : 1 }}
+          className="test--event-list__item"
+        >
+          <td>{event.title}</td>
+          <td>{event.when}</td>
+          <td>{event.where}</td>
+        </tr>
+      </>
     )
   }
 }
 
+EventRow.propTypes = {}
+
 const spec = {
   beginDrag(props) {
     return {
-      id: props.event.id
+      id: props.event.id,
+      title: props.event.title
     }
   }
 }
 
 const collect = (connect, monitor) => ({
-  dragSource: connect.dragSource(),
+  connectDragSource: connect.dragSource(),
+  connectDragPreview: connect.dragPreview(),
   isDragging: monitor.isDragging()
 })
 
