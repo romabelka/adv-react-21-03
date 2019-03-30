@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import EventsTable from '../../events/events-table'
 import PeopleList from '../../people/people-list'
+import CustomDragLayer from '../../custom-drag-layer'
 
 class AllLists extends Component {
   static propTypes = {}
@@ -8,6 +9,7 @@ class AllLists extends Component {
   render() {
     return (
       <div>
+        <CustomDragLayer />
         <PeopleList />
         <EventsTable />
       </div>
