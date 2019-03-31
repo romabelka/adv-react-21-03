@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DropTarget } from 'react-dnd'
+import { DragSource, DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
 import { addPersonToEvent } from '../../ducks/people'
 
@@ -7,9 +7,9 @@ class PersonCard extends Component {
   static propTypes = {}
 
   render() {
-    const { person, dropTarget, canDrop, isOver } = this.props
+    const { person, dropTarget, dragSource, canDrop, isOver } = this.props
     const borderColor = canDrop ? (isOver ? 'red' : 'green') : 'black'
-    return (
+    return dragSource(
       <div style={{ border: `1px solid ${borderColor}` }}>
         {person.email}: {person.firstName}
         {dropTarget(<div>Drop Here</div>)}
@@ -30,7 +30,24 @@ const collect = (connect, monitor) => ({
   isOver: monitor.isOver()
 })
 
+const sourceSpec = {
+  beginDrag(props) {
+    return {
+      id: props.person.id
+    }
+  }
+}
+
+const sourceCollect = (connect, monitor) => ({
+  dragSource: connect.dragSource(),
+  isDragging: monitor.isDragging()
+})
+
 export default connect(
   null,
   { addPersonToEvent }
-)(DropTarget(['event'], spec, collect)(PersonCard))
+)(
+  DragSource('people', sourceSpec, sourceCollect)(
+    DropTarget(['event'], spec, collect)(PersonCard)
+  )
+)

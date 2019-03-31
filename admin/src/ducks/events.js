@@ -4,6 +4,7 @@ import { Record, List } from 'immutable'
 import { createSelector } from 'reselect'
 import { fbToEntities } from '../services/utils'
 import api from '../services/api'
+import { REMOVE_PERSON_FROM_LIST } from './people'
 
 /**
  * Constants
@@ -14,6 +15,7 @@ const prefix = `${appName}/${moduleName}`
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
+export const REMOVE_EVENT_FROM_LIST = `${prefix}/REMOVE_EVENT_FROM_LIST`
 
 /**
  * Reducer
@@ -83,6 +85,11 @@ export function fetchAllEvents() {
     type: FETCH_ALL_REQUEST
   }
 }
+
+export const removeEventFromList = (eventId) => ({
+  type: REMOVE_EVENT_FROM_LIST,
+  payload: { eventId }
+})
 
 /**
  * Sagas
