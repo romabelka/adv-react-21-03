@@ -17,6 +17,7 @@ class ApiService {
     this.fb
       .firestore()
       .collection('events')
+      .limit(10)
       .get()
       .then(resToEntities)
 

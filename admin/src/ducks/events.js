@@ -4,6 +4,7 @@ import { Record, List } from 'immutable'
 import { createSelector } from 'reselect'
 import { fbToEntities } from '../services/utils'
 import api from '../services/api'
+import { MOVE_TO_TRASH } from './trash'
 
 /**
  * Constants
@@ -46,6 +47,14 @@ export default function reducer(state = new ReducerRecord(), action) {
         .set('loading', false)
         .set('loaded', true)
         .set('entities', fbToEntities(payload, EventRecord))
+
+    case MOVE_TO_TRASH:
+      return payload.entityType === 'event'
+        ? state.set(
+            'entities',
+            state.entities.filter((entity) => entity.id !== payload.id)
+          )
+        : state
 
     default:
       return state
