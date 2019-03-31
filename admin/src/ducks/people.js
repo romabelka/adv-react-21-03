@@ -4,6 +4,7 @@ import { takeEvery, put, call } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
 import { generateId } from '../services/utils'
+import { MOVE_TO_TRASH } from './trash'
 
 const defaultPeople = new List([
   { id: 1, firstName: 'Roma', email: 'test@example.com' },
@@ -42,6 +43,14 @@ export default function reducer(state = new ReducerState(), action) {
       return state.update('entities', (entities) =>
         entities.push(new PersonRecord(payload))
       )
+
+    case MOVE_TO_TRASH:
+      return payload.entityType === 'person'
+        ? state.set(
+            'entities',
+            state.entities.filter((entity) => entity.id !== payload.id)
+          )
+        : state
 
     default:
       return state

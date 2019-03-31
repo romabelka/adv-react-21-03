@@ -40,8 +40,7 @@ class BasketSquare extends React.Component {
   }
 }
 
-// TODO: multiple types
 export default connect(
   null,
   { moveToTrash }
-)(DropTarget(Types.event, basketSquareTarget, collect)(BasketSquare))
+)(DropTarget(Object.values(Types), basketSquareTarget, collect)(BasketSquare))
