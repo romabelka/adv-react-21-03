@@ -4,7 +4,6 @@ import { Record, List } from 'immutable'
 import { createSelector } from 'reselect'
 import { fbToEntities } from '../services/utils'
 import api from '../services/api'
-import { REMOVE_PERSON_FROM_LIST } from './people'
 
 /**
  * Constants
