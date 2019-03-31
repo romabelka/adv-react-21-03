@@ -19,6 +19,7 @@ const prefix = `${appName}/${moduleName}`
 export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
 export const ADD_PERSON = `${prefix}/ADD_PERSON`
 export const ADD_PERSON_TO_EVENT = `${prefix}/ADD_PERSON_TO_EVENT`
+export const REMOVE_PERSON_FROM_LIST = `${prefix}/REMOVE_PERSON_FROM_LIST`
 
 /**
  * Reducer
@@ -69,6 +70,11 @@ export const addPerson = (person) => ({
 export const addPersonToEvent = (personId, eventId) => ({
   type: ADD_PERSON_TO_EVENT,
   payload: { personId, eventId }
+})
+
+export const removePersonFromList = (personId) => ({
+  type: REMOVE_PERSON_FROM_LIST,
+  payload: { personId }
 })
 
 /**
