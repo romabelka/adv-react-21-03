@@ -1,6 +1,6 @@
 import { all, takeEvery, put, call } from 'redux-saga/effects'
 import { appName } from '../config'
-import { Record, List } from 'immutable'
+import { Record, OrderedMap } from 'immutable'
 import { createSelector } from 'reselect'
 import { fbToEntities } from '../services/utils'
 import api from '../services/api'
@@ -15,13 +15,17 @@ export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
+export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
+
+export const DELETE_EVENT_REQUEST = `${prefix}/DELETE_EVENT_REQUEST`
+
 /**
  * Reducer
  * */
 export const ReducerRecord = Record({
   loading: false,
   loaded: false,
-  entities: new List([])
+  entities: new OrderedMap([])
 })
 
 export const EventRecord = Record({
@@ -71,18 +75,33 @@ export const loadedSelector = createSelector(
 )
 export const eventListSelector = createSelector(
   entitiesSelector,
-  (entities) => entities.toArray()
+  (entities) => entities.valueSeq().toArray()
+)
+
+export const idSelector = (state, props) => props.id
+export const eventSelector = createSelector(
+  entitiesSelector,
+  idSelector,
+  (entities, id) => entities.get(id)
 )
 
 /**
  * Action Creators
  * */
 
-export function fetchAllEvents() {
-  return {
-    type: FETCH_ALL_REQUEST
-  }
-}
+export const fetchAllEvents = () => ({
+  type: FETCH_ALL_REQUEST
+})
+
+export const selectEvent = (id) => ({
+  type: SELECT_EVENT,
+  payload: { id }
+})
+
+export const deleteEvent = (id) => ({
+  type: DELETE_EVENT_REQUEST,
+  payload: { id }
+})
 
 /**
  * Sagas

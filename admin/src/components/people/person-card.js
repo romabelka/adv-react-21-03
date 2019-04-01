@@ -1,15 +1,20 @@
 import React, { Component } from 'react'
-import { DropTarget } from 'react-dnd'
+import { DragSource, DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
 import { addPersonToEvent } from '../../ducks/people'
+import { getEmptyImage } from 'react-dnd-html5-backend'
+import DragPreview from './person-drag-preview'
 
 class PersonCard extends Component {
   static propTypes = {}
+  componentDidMount() {
+    this.props.connectPreview(getEmptyImage())
+  }
 
   render() {
-    const { person, dropTarget, canDrop, isOver } = this.props
+    const { person, dropTarget, dragSource, canDrop, isOver } = this.props
     const borderColor = canDrop ? (isOver ? 'red' : 'green') : 'black'
-    return (
+    return dragSource(
       <div style={{ border: `1px solid ${borderColor}` }}>
         {person.email}: {person.firstName}
         {dropTarget(<div>Drop Here</div>)}
@@ -18,19 +23,37 @@ class PersonCard extends Component {
   }
 }
 
-const spec = {
+const dropSpec = {
   drop(props, monitor) {
     props.addPersonToEvent(props.person.id, monitor.getItem().id)
   }
 }
 
-const collect = (connect, monitor) => ({
+const dropCollect = (connect, monitor) => ({
   dropTarget: connect.dropTarget(),
   canDrop: monitor.canDrop(),
   isOver: monitor.isOver()
 })
 
+const dragSpec = {
+  beginDrag(props) {
+    return {
+      id: props.person.id,
+      DragPreview
+    }
+  }
+}
+
+const dragCollect = (connect) => ({
+  dragSource: connect.dragSource(),
+  connectPreview: connect.dragPreview()
+})
+
 export default connect(
   null,
   { addPersonToEvent }
-)(DropTarget(['event'], spec, collect)(PersonCard))
+)(
+  DropTarget(['event'], dropSpec, dropCollect)(
+    DragSource('person', dragSpec, dragCollect)(PersonCard)
+  )
+)

@@ -1,14 +1,14 @@
 import { appName } from '../config'
-import { Record, List } from 'immutable'
+import { Record, List, OrderedMap } from 'immutable'
 import { takeEvery, put, call } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
 import { generateId } from '../services/utils'
 
-const defaultPeople = new List([
-  { id: 1, firstName: 'Roma', email: 'test@example.com' },
-  { id: 2, firstName: 'Foo', email: 'foo@example.com' },
-  { id: 3, firstName: 'Bar', email: 'bar@example.com' }
+const defaultPeople = new OrderedMap([
+  [1, { id: 1, firstName: 'Roma', email: 'test@example.com' }],
+  [2, { id: 2, firstName: 'Foo', email: 'foo@example.com' }],
+  [3, { id: 3, firstName: 'Bar', email: 'bar@example.com' }]
 ])
 
 /**
@@ -18,7 +18,10 @@ export const moduleName = 'people'
 const prefix = `${appName}/${moduleName}`
 export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
 export const ADD_PERSON = `${prefix}/ADD_PERSON`
+
 export const ADD_PERSON_TO_EVENT = `${prefix}/ADD_PERSON_TO_EVENT`
+
+export const DELETE_PERSON_REQUEST = `${prefix}/DELETE_PERSON_REQUEST`
 
 /**
  * Reducer
@@ -39,9 +42,7 @@ export default function reducer(state = new ReducerState(), action) {
 
   switch (type) {
     case ADD_PERSON:
-      return state.update('entities', (entities) =>
-        entities.push(new PersonRecord(payload))
-      )
+      return state.setIn(['entities', payload.id], new PersonRecord(payload))
 
     default:
       return state
@@ -57,6 +58,14 @@ export const peopleSelector = createSelector(
   (state) => state.entities.valueSeq().toArray()
 )
 
+const idSelector = (_, { id }) => id
+
+export const personSelector = createSelector(
+  stateSelector,
+  idSelector,
+  (state, id) => state.getIn(['entities', id])
+)
+
 /**
  * Action Creators
  * */
@@ -69,6 +78,11 @@ export const addPerson = (person) => ({
 export const addPersonToEvent = (personId, eventId) => ({
   type: ADD_PERSON_TO_EVENT,
   payload: { personId, eventId }
+})
+
+export const deletePerson = (id) => ({
+  type: DELETE_PERSON_REQUEST,
+  payload: { id }
 })
 
 /**
