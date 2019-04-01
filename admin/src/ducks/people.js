@@ -1,6 +1,14 @@
 import { appName } from '../config'
 import { Record, OrderedMap } from 'immutable'
-import { takeEvery, put, call, all } from 'redux-saga/effects'
+import {
+  takeEvery,
+  put,
+  call,
+  all,
+  delay,
+  fork,
+  spawn
+} from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -111,14 +119,12 @@ export function* addPersonSaga(action) {
 }
 
 export function* fetchAllSaga() {
-  try {
-    const data = yield call(api.loadAllPeople)
+  const data = yield call(api.loadAllPeople)
 
-    yield put({
-      type: FETCH_ALL_SUCCESS,
-      payload: data
-    })
-  } catch (_) {}
+  yield put({
+    type: FETCH_ALL_SUCCESS,
+    payload: data
+  })
 }
 
 export function* deletePersonSaga({ payload }) {
@@ -132,10 +138,35 @@ export function* deletePersonSaga({ payload }) {
   } catch (_) {}
 }
 
+export function* callWithRetry(saga) {
+  for (let i = 0; i < 5; i++) {
+    try {
+      console.log('---', 1, saga)
+      return yield call(saga)
+    } catch (e) {
+      yield delay(500 * Math.pow(2, i))
+    }
+  }
+
+  throw new Error('retry limit reached')
+}
+
+export function* syncWithPolling() {
+  let count = 0
+  while (true) {
+    yield call(fetchAllSaga)
+
+    yield delay(3000)
+
+    if (count++ >= 2) throw new Error('some network error')
+  }
+}
+
 export function* saga() {
+  yield spawn(syncWithPolling)
+
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
-    takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
     takeEvery(DELETE_PERSON_REQUEST, deletePersonSaga)
   ])
 }
