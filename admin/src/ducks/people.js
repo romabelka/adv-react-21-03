@@ -10,8 +10,10 @@ import {
   spawn,
   cancel,
   cancelled,
-  race
+  race,
+  take
 } from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -183,8 +185,24 @@ export function* cancellableSyncSaga() {
 */
 }
 
+const createPeopleChannel = () =>
+  eventChannel((emit) => api.subscribeForPeople(emit))
+
+export function* realtimeSyncSaga() {
+  const channel = yield call(createPeopleChannel)
+
+  while (true) {
+    const data = yield take(channel)
+
+    yield put({
+      type: FETCH_ALL_SUCCESS,
+      payload: data
+    })
+  }
+}
+
 export function* saga() {
-  yield spawn(cancellableSyncSaga)
+  yield spawn(realtimeSyncSaga)
 
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
