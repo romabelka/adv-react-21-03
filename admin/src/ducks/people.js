@@ -7,7 +7,9 @@ import {
   all,
   delay,
   fork,
-  spawn
+  spawn,
+  cancel,
+  cancelled
 } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
@@ -152,18 +154,28 @@ export function* callWithRetry(saga) {
 }
 
 export function* syncWithPolling() {
-  let count = 0
-  while (true) {
-    yield call(fetchAllSaga)
+  try {
+    let count = 0
+    while (true) {
+      yield call(fetchAllSaga)
 
-    yield delay(3000)
+      yield delay(3000)
 
-    if (count++ >= 2) throw new Error('some network error')
+      if (count++ >= 2) throw new Error('some network error')
+    }
+  } finally {
+    if (yield cancelled()) console.log('---', 'cancelled')
   }
 }
 
+export function* cancellableSyncSaga() {
+  const process = yield fork(syncWithPolling)
+  yield delay(5000)
+  yield cancel(process)
+}
+
 export function* saga() {
-  yield spawn(syncWithPolling)
+  yield spawn(cancellableSyncSaga)
 
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
