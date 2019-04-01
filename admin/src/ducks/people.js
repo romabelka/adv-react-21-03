@@ -9,7 +9,8 @@ import {
   fork,
   spawn,
   cancel,
-  cancelled
+  cancelled,
+  race
 } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
@@ -169,9 +170,17 @@ export function* syncWithPolling() {
 }
 
 export function* cancellableSyncSaga() {
+  yield race({
+    sync: syncWithPolling(),
+    timeout: delay(7000)
+    //    routeChange: locationChangeSaga(),
+    //    stopBtnClicked: watchStopSyncSaga()
+  })
+  /*
   const process = yield fork(syncWithPolling)
   yield delay(5000)
   yield cancel(process)
+*/
 }
 
 export function* saga() {
