@@ -1,15 +1,12 @@
 import { appName } from '../config'
-import { Record, List, OrderedMap } from 'immutable'
-import { takeEvery, put, call } from 'redux-saga/effects'
+import { Record, OrderedMap } from 'immutable'
+import { takeEvery, put, call, all } from 'redux-saga/effects'
 import { reset } from 'redux-form'
 import { createSelector } from 'reselect'
-import { generateId } from '../services/utils'
+import api from '../services/api'
+import { fbToEntities } from '../services/utils'
 
-const defaultPeople = new OrderedMap([
-  [1, { id: 1, firstName: 'Roma', email: 'test@example.com' }],
-  [2, { id: 2, firstName: 'Foo', email: 'foo@example.com' }],
-  [3, { id: 3, firstName: 'Bar', email: 'bar@example.com' }]
-])
+const defaultPeople = new OrderedMap()
 
 /**
  * Constants
@@ -17,11 +14,14 @@ const defaultPeople = new OrderedMap([
 export const moduleName = 'people'
 const prefix = `${appName}/${moduleName}`
 export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
-export const ADD_PERSON = `${prefix}/ADD_PERSON`
+export const ADD_PERSON_START = `${prefix}/ADD_PERSON_START`
+export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
-export const ADD_PERSON_TO_EVENT = `${prefix}/ADD_PERSON_TO_EVENT`
+export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
+export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
 export const DELETE_PERSON_REQUEST = `${prefix}/DELETE_PERSON_REQUEST`
+export const DELETE_PERSON_SUCCESS = `${prefix}/DELETE_PERSON_SUCCESS`
 
 /**
  * Reducer
@@ -41,8 +41,14 @@ export default function reducer(state = new ReducerState(), action) {
   const { type, payload } = action
 
   switch (type) {
-    case ADD_PERSON:
+    case ADD_PERSON_SUCCESS:
       return state.setIn(['entities', payload.id], new PersonRecord(payload))
+
+    case FETCH_ALL_SUCCESS:
+      return state.set('entities', fbToEntities(payload, PersonRecord))
+
+    case DELETE_PERSON_SUCCESS:
+      return state.deleteIn(['entities', payload.id])
 
     default:
       return state
@@ -75,34 +81,61 @@ export const addPerson = (person) => ({
   payload: { person }
 })
 
-export const addPersonToEvent = (personId, eventId) => ({
-  type: ADD_PERSON_TO_EVENT,
-  payload: { personId, eventId }
-})
-
 export const deletePerson = (id) => ({
   type: DELETE_PERSON_REQUEST,
   payload: { id }
+})
+
+export const fetchAllPeople = () => ({
+  type: FETCH_ALL_REQUEST
 })
 
 /**
  * Sagas
  */
 
-export function* addPersonSaga({ payload }) {
-  const id = yield call(generateId)
+export function* addPersonSaga(action) {
+  yield put({
+    type: ADD_PERSON_START,
+    payload: { ...action.payload.person }
+  })
+
+  const { id } = yield call(api.addPerson, action.payload.person)
 
   yield put({
-    type: ADD_PERSON,
-    payload: {
-      id,
-      ...payload.person
-    }
+    type: ADD_PERSON_SUCCESS,
+    payload: { id, ...action.payload.person }
   })
 
   yield put(reset('person'))
 }
 
+export function* fetchAllSaga() {
+  try {
+    const data = yield call(api.loadAllPeople)
+
+    yield put({
+      type: FETCH_ALL_SUCCESS,
+      payload: data
+    })
+  } catch (_) {}
+}
+
+export function* deletePersonSaga({ payload }) {
+  try {
+    yield call(api.deletePerson, payload.id)
+
+    yield put({
+      type: DELETE_PERSON_SUCCESS,
+      payload
+    })
+  } catch (_) {}
+}
+
 export function* saga() {
-  yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga)
+  yield all([
+    takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
+    takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+    takeEvery(DELETE_PERSON_REQUEST, deletePersonSaga)
+  ])
 }

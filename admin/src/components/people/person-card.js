@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { DragSource, DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
-import { addPersonToEvent } from '../../ducks/people'
+import { addPersonToEvent } from '../../ducks/events'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import DragPreview from './person-drag-preview'
 
