@@ -1,6 +1,6 @@
-import { all, takeEvery, put, call } from 'redux-saga/effects'
+import { all, takeEvery, put, call, select } from 'redux-saga/effects'
 import { appName } from '../config'
-import { Record, List } from 'immutable'
+import { Record, OrderedMap } from 'immutable'
 import { createSelector } from 'reselect'
 import { fbToEntities } from '../services/utils'
 import api from '../services/api'
@@ -15,13 +15,21 @@ export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
+export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
+
+export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
+export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
+
+export const DELETE_EVENT_REQUEST = `${prefix}/DELETE_EVENT_REQUEST`
+export const DELETE_EVENT_SUCCESS = `${prefix}/DELETE_EVENT_SUCCESS`
+
 /**
  * Reducer
  * */
 export const ReducerRecord = Record({
   loading: false,
   loaded: false,
-  entities: new List([])
+  entities: new OrderedMap([])
 })
 
 export const EventRecord = Record({
@@ -31,7 +39,8 @@ export const EventRecord = Record({
   title: null,
   url: null,
   when: null,
-  where: null
+  where: null,
+  peopleIds: []
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -46,6 +55,18 @@ export default function reducer(state = new ReducerRecord(), action) {
         .set('loading', false)
         .set('loaded', true)
         .set('entities', fbToEntities(payload, EventRecord))
+
+    case ADD_PERSON_SUCCESS:
+      return state.setIn(
+        ['entities', payload.eventId, 'peopleIds'],
+        payload.peopleIds
+      )
+
+    case DELETE_EVENT_REQUEST:
+      return state.set('loading', true)
+
+    case DELETE_EVENT_SUCCESS:
+      return state.set('loading', false).deleteIn(['entities', payload.id])
 
     default:
       return state
@@ -71,18 +92,41 @@ export const loadedSelector = createSelector(
 )
 export const eventListSelector = createSelector(
   entitiesSelector,
-  (entities) => entities.toArray()
+  (entities) => entities.valueSeq().toArray()
+)
+
+export const idSelector = (state, props) => props.id
+export const eventSelector = createSelector(
+  entitiesSelector,
+  idSelector,
+  (entities, id) => entities.get(id)
 )
 
 /**
  * Action Creators
  * */
 
-export function fetchAllEvents() {
-  return {
-    type: FETCH_ALL_REQUEST
+export const fetchAllEvents = () => ({
+  type: FETCH_ALL_REQUEST
+})
+
+export const selectEvent = (id) => ({
+  type: SELECT_EVENT,
+  payload: { id }
+})
+
+export const deleteEvent = (id) => ({
+  type: DELETE_EVENT_REQUEST,
+  payload: { id }
+})
+
+export const addPersonToEvent = (personId, eventId) => ({
+  type: ADD_PERSON_REQUEST,
+  payload: {
+    personId,
+    eventId
   }
-}
+})
 
 /**
  * Sagas
@@ -101,6 +145,38 @@ export function* fetchAllSaga() {
   })
 }
 
+export const deleteEventSaga = function*(action) {
+  const { payload } = action
+
+  try {
+    yield call(api.deleteEvent, payload.id)
+
+    yield put({
+      type: DELETE_EVENT_SUCCESS,
+      payload
+    })
+  } catch (_) {}
+}
+
+export function* addPersonToEventSaga({ payload: { eventId, personId } }) {
+  const state = yield select(entitiesSelector)
+  const curPeopleIds = state.getIn([eventId, 'peopleIds'])
+
+  if (curPeopleIds.includes(personId)) return
+  const peopleIds = curPeopleIds.concat(personId)
+
+  yield call(api.addPersonToEvent, eventId, peopleIds)
+
+  yield put({
+    type: ADD_PERSON_SUCCESS,
+    payload: { peopleIds, eventId }
+  })
+}
+
 export function* saga() {
-  yield all([takeEvery(FETCH_ALL_REQUEST, fetchAllSaga)])
+  yield all([
+    takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+    takeEvery(DELETE_EVENT_REQUEST, deleteEventSaga),
+    takeEvery(ADD_PERSON_REQUEST, addPersonToEventSaga)
+  ])
 }
