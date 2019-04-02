@@ -29,6 +29,12 @@ class ApiService {
       .collection('people')
       .onSnapshot((snapshot) => callback(resToEntities(snapshot)))
 
+  subscribeForEvents = (callback) =>
+    this.fb
+      .firestore()
+      .collection('events')
+      .onSnapshot((snapshot) => callback(resToEntities(snapshot)))
+
   loadAllPeople = () =>
     this.fb
       .firestore()
