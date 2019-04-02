@@ -1,9 +1,18 @@
-import { all, takeEvery, put, call, select } from 'redux-saga/effects'
+import {
+  all,
+  takeEvery,
+  put,
+  call,
+  select,
+  take,
+  spawn
+} from 'redux-saga/effects'
 import { appName } from '../config'
 import { Record, OrderedMap } from 'immutable'
 import { createSelector } from 'reselect'
 import { fbToEntities } from '../services/utils'
 import api from '../services/api'
+import { eventChannel } from 'redux-saga'
 
 /**
  * Constants
@@ -132,6 +141,22 @@ export const addPersonToEvent = (personId, eventId) => ({
  * Sagas
  * */
 
+const createEventsChannel = () =>
+  eventChannel((emit) => api.subscribeForEvents(emit))
+
+export function* realtimeSyncSaga() {
+  const channel = yield call(createEventsChannel)
+
+  while (true) {
+    const data = yield take(channel)
+
+    yield put({
+      type: FETCH_ALL_SUCCESS,
+      payload: data
+    })
+  }
+}
+
 export function* fetchAllSaga() {
   yield put({
     type: FETCH_ALL_START
@@ -150,11 +175,6 @@ export const deleteEventSaga = function*(action) {
 
   try {
     yield call(api.deleteEvent, payload.id)
-
-    yield put({
-      type: DELETE_EVENT_SUCCESS,
-      payload
-    })
   } catch (_) {}
 }
 
@@ -174,8 +194,9 @@ export function* addPersonToEventSaga({ payload: { eventId, personId } }) {
 }
 
 export function* saga() {
+  yield spawn(realtimeSyncSaga)
+
   yield all([
-    takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
     takeEvery(DELETE_EVENT_REQUEST, deleteEventSaga),
     takeEvery(ADD_PERSON_REQUEST, addPersonToEventSaga)
   ])
