@@ -75,7 +75,7 @@ export default function reducer(state = new ReducerRecord(), action) {
       return state.set('loading', true)
 
     case DELETE_EVENT_SUCCESS:
-      return state.set('loading', false).deleteIn(['entities', payload.id])
+      return state.set('loading', false)
 
     default:
       return state

@@ -1,7 +1,8 @@
 import { appName } from '../config'
-import { all, takeEvery, call, put, take } from 'redux-saga/effects'
+import { all, takeEvery, call, put, take, spawn } from 'redux-saga/effects'
 import { Record } from 'immutable'
 import { createSelector } from 'reselect'
+import { eventChannel } from 'redux-saga'
 import api from '../services/api'
 
 /**
@@ -34,8 +35,6 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
 
   switch (type) {
-    case SIGN_IN_SUCCESS:
-    case SIGN_UP_SUCCESS:
     case AUTH_STATE_CHANGE:
       return state.set('user', payload.user)
 
@@ -58,19 +57,6 @@ export const isAuthorizedSelector = createSelector(
 )
 
 /**
- * Init logic
- */
-
-export function init(store) {
-  api.onAuthStateChanged((user) => {
-    store.dispatch({
-      type: AUTH_STATE_CHANGE,
-      payload: { user }
-    })
-  })
-}
-
-/**
  * Action Creators
  * */
 export const signUp = (email, password) => ({
@@ -90,8 +76,7 @@ export function* signUpSaga({ payload }) {
     const user = yield call(api.signUp, payload.email, payload.password)
 
     yield put({
-      type: SIGN_UP_SUCCESS,
-      payload: { user }
+      type: SIGN_UP_SUCCESS
     })
   } catch (error) {
     yield put({
@@ -112,8 +97,7 @@ export function* signInSaga() {
       const user = yield call(api.signIn, payload.email, payload.password)
 
       yield put({
-        type: SIGN_IN_SUCCESS,
-        payload: { user }
+        type: SIGN_IN_SUCCESS
       })
     } catch (error) {
       yield put({
@@ -129,6 +113,24 @@ export function* signInSaga() {
   }
 }
 
+const createAuthChannel = () =>
+  eventChannel((emit) => api.onAuthStateChanged(emit))
+
+export function* realtimeSyncSaga() {
+  const channel = yield call(createAuthChannel)
+
+  while (true) {
+    const user = yield take(channel)
+
+    yield put({
+      type: AUTH_STATE_CHANGE,
+      payload: { user }
+    })
+  }
+}
+
 export function* saga() {
+  yield spawn(realtimeSyncSaga)
+
   yield all([takeEvery(SIGN_UP_REQUEST, signUpSaga), signInSaga()])
 }
