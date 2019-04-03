@@ -62,6 +62,12 @@ class ApiService {
       .collection('people')
       .doc(id)
       .delete()
+
+  subscribeForEvents = (callback) =>
+    this.fb
+      .firestore()
+      .collection('events')
+      .onSnapshot((snapshot) => callback(resToEntities(snapshot)))
 }
 
 function resToEntities(res) {
