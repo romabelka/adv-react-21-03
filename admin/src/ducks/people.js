@@ -123,14 +123,14 @@ export function* addPersonSaga(action) {
   yield put(reset('person'))
 }
 
-export function* fetchAllSaga() {
-  const data = yield call(api.loadAllPeople)
-
-  yield put({
-    type: FETCH_ALL_SUCCESS,
-    payload: data
-  })
-}
+// export function* fetchAllSaga() {
+//   const data = yield call(api.loadAllPeople)
+//
+//   yield put({
+//     type: FETCH_ALL_SUCCESS,
+//     payload: data
+//   })
+// }
 
 export function* deletePersonSaga({ payload }) {
   try {
@@ -143,47 +143,47 @@ export function* deletePersonSaga({ payload }) {
   } catch (_) {}
 }
 
-export function* callWithRetry(saga) {
-  for (let i = 0; i < 5; i++) {
-    try {
-      console.log('---', 1, saga)
-      return yield call(saga)
-    } catch (e) {
-      yield delay(500 * Math.pow(2, i))
-    }
-  }
+// export function* callWithRetry(saga) {
+//   for (let i = 0; i < 5; i++) {
+//     try {
+//       console.log('---', 1, saga)
+//       return yield call(saga)
+//     } catch (e) {
+//       yield delay(500 * Math.pow(2, i))
+//     }
+//   }
+//
+//   throw new Error('retry limit reached')
+//}
 
-  throw new Error('retry limit reached')
-}
+// export function* syncWithPolling() {
+//   try {
+//     let count = 0
+//     while (true) {
+//       yield call(fetchAllSaga)
+//
+//       yield delay(3000)
+//
+//       if (count++ >= 2) throw new Error('some network error')
+//     }
+//   } finally {
+//     if (yield cancelled()) console.log('---', 'cancelled')
+//   }
+// }
 
-export function* syncWithPolling() {
-  try {
-    let count = 0
-    while (true) {
-      yield call(fetchAllSaga)
-
-      yield delay(3000)
-
-      if (count++ >= 2) throw new Error('some network error')
-    }
-  } finally {
-    if (yield cancelled()) console.log('---', 'cancelled')
-  }
-}
-
-export function* cancellableSyncSaga() {
-  yield race({
-    sync: syncWithPolling(),
-    timeout: delay(7000)
-    //    routeChange: locationChangeSaga(),
-    //    stopBtnClicked: watchStopSyncSaga()
-  })
-  /*
-  const process = yield fork(syncWithPolling)
-  yield delay(5000)
-  yield cancel(process)
-*/
-}
+// export function* cancellableSyncSaga() {
+//   yield race({
+//     sync: syncWithPolling(),
+//     timeout: delay(7000)
+//     //    routeChange: locationChangeSaga(),
+//     //    stopBtnClicked: watchStopSyncSaga()
+//   })
+//   /*
+//   const process = yield fork(syncWithPolling)
+//   yield delay(5000)
+//   yield cancel(process)
+// */
+// }
 
 const createPeopleChannel = () =>
   eventChannel((emit) => api.subscribeForPeople(emit))
