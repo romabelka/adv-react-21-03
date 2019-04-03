@@ -1,4 +1,13 @@
-import { all, takeEvery, put, call, select } from 'redux-saga/effects'
+import {
+  all,
+  takeEvery,
+  take,
+  put,
+  call,
+  select,
+  spawn
+} from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga'
 import { appName } from '../config'
 import { Record, OrderedMap } from 'immutable'
 import { createSelector } from 'reselect'
@@ -11,8 +20,6 @@ import api from '../services/api'
 export const moduleName = 'events'
 const prefix = `${appName}/${moduleName}`
 
-export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
-export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
@@ -21,13 +28,12 @@ export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
 export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
 export const DELETE_EVENT_REQUEST = `${prefix}/DELETE_EVENT_REQUEST`
-export const DELETE_EVENT_SUCCESS = `${prefix}/DELETE_EVENT_SUCCESS`
 
 /**
  * Reducer
  * */
 export const ReducerRecord = Record({
-  loading: false,
+  loading: true,
   loaded: false,
   entities: new OrderedMap([])
 })
@@ -47,9 +53,6 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
 
   switch (type) {
-    case FETCH_ALL_START:
-      return state.set('loading', true)
-
     case FETCH_ALL_SUCCESS:
       return state
         .set('loading', false)
@@ -64,9 +67,6 @@ export default function reducer(state = new ReducerRecord(), action) {
 
     case DELETE_EVENT_REQUEST:
       return state.set('loading', true)
-
-    case DELETE_EVENT_SUCCESS:
-      return state.set('loading', false).deleteIn(['entities', payload.id])
 
     default:
       return state
@@ -96,6 +96,7 @@ export const eventListSelector = createSelector(
 )
 
 export const idSelector = (state, props) => props.id
+
 export const eventSelector = createSelector(
   entitiesSelector,
   idSelector,
@@ -105,10 +106,6 @@ export const eventSelector = createSelector(
 /**
  * Action Creators
  * */
-
-export const fetchAllEvents = () => ({
-  type: FETCH_ALL_REQUEST
-})
 
 export const selectEvent = (id) => ({
   type: SELECT_EVENT,
@@ -132,17 +129,18 @@ export const addPersonToEvent = (personId, eventId) => ({
  * Sagas
  * */
 
-export function* fetchAllSaga() {
-  yield put({
-    type: FETCH_ALL_START
-  })
+const createEvetsChannel = () =>
+  eventChannel((emit) => api.subscribeToEvents(emit))
 
-  const data = yield call(api.fetchAllEvents)
-
-  yield put({
-    type: FETCH_ALL_SUCCESS,
-    payload: data
-  })
+export function* realtimeEventsSaga() {
+  const channel = yield call(createEvetsChannel)
+  while (true) {
+    const data = yield take(channel)
+    yield put({
+      type: FETCH_ALL_SUCCESS,
+      payload: data
+    })
+  }
 }
 
 export const deleteEventSaga = function*(action) {
@@ -150,11 +148,6 @@ export const deleteEventSaga = function*(action) {
 
   try {
     yield call(api.deleteEvent, payload.id)
-
-    yield put({
-      type: DELETE_EVENT_SUCCESS,
-      payload
-    })
   } catch (_) {}
 }
 
@@ -174,8 +167,8 @@ export function* addPersonToEventSaga({ payload: { eventId, personId } }) {
 }
 
 export function* saga() {
+  yield spawn(realtimeEventsSaga)
   yield all([
-    takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
     takeEvery(DELETE_EVENT_REQUEST, deleteEventSaga),
     takeEvery(ADD_PERSON_REQUEST, addPersonToEventSaga)
   ])

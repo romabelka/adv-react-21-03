@@ -1,10 +1,10 @@
 export const appName = 'adv-react-21-03'
 
 export const firebaseConfig = {
-  apiKey: 'AIzaSyCj-E59IlLpTfHFqrNl4DREvpwD5bq8fmM',
-  authDomain: 'adv-react-21-03.firebaseapp.com',
-  databaseURL: 'https://adv-react-21-03.firebaseio.com',
-  projectId: 'adv-react-21-03',
-  storageBucket: '',
-  messagingSenderId: '679222747585'
+  apiKey: 'AIzaSyD0X9SDIfdFi493yEQS5Gmgb1wUIM239j0',
+  authDomain: 'adv-react-21-03-1485c.firebaseapp.com',
+  databaseURL: 'https://adv-react-21-03-1485c.firebaseio.com',
+  projectId: 'adv-react-21-03-1485c',
+  storageBucket: 'adv-react-21-03-1485c.appspot.com',
+  messagingSenderId: '765553997895'
 }

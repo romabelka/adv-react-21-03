@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import {
-  fetchAllEvents,
   eventListSelector,
   loadedSelector,
   loadingSelector,
@@ -12,10 +11,6 @@ import EventRow from './event-row'
 
 export class EventsTable extends Component {
   static propTypes = {}
-
-  componentDidMount() {
-    this.props.fetchAllEvents()
-  }
 
   render() {
     if (this.props.loading) return <Loader />
@@ -43,5 +38,5 @@ export default connect(
     loading: loadingSelector(state),
     loaded: loadedSelector(state)
   }),
-  { fetchAllEvents, selectEvent }
+  { selectEvent }
 )(EventsTable)

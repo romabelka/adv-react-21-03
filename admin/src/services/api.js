@@ -21,6 +21,12 @@ class ApiService {
       .get()
       .then(resToEntities)
 
+  subscribeToEvents = (callback) =>
+    this.fb
+      .firestore()
+      .collection('events')
+      .onSnapshot((snapshot) => callback(resToEntities(snapshot)))
+
   onAuthStateChanged = (callback) => this.fb.auth().onAuthStateChanged(callback)
 
   subscribeForPeople = (callback) =>
