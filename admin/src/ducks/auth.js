@@ -1,5 +1,6 @@
 import { appName } from '../config'
-import { all, takeEvery, call, put, take } from 'redux-saga/effects'
+import { all, takeEvery, call, put, take, spawn } from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga'
 import { Record } from 'immutable'
 import { createSelector } from 'reselect'
 import api from '../services/api'
@@ -34,8 +35,6 @@ export default function reducer(state = new ReducerRecord(), action) {
   const { type, payload } = action
 
   switch (type) {
-    case SIGN_IN_SUCCESS:
-    case SIGN_UP_SUCCESS:
     case AUTH_STATE_CHANGE:
       return state.set('user', payload.user)
 
@@ -56,19 +55,6 @@ export const isAuthorizedSelector = createSelector(
   userSelector,
   (user) => !!user
 )
-
-/**
- * Init logic
- */
-
-export function init(store) {
-  api.onAuthStateChanged((user) => {
-    store.dispatch({
-      type: AUTH_STATE_CHANGE,
-      payload: { user }
-    })
-  })
-}
 
 /**
  * Action Creators
@@ -112,7 +98,7 @@ export function* signInSaga() {
       const user = yield call(api.signIn, payload.email, payload.password)
 
       yield put({
-        type: SIGN_IN_SUCCESS,
+        type: AUTH_STATE_CHANGE,
         payload: { user }
       })
     } catch (error) {
@@ -129,6 +115,23 @@ export function* signInSaga() {
   }
 }
 
+const createAuthStateChannel = () =>
+  eventChannel((emit) => api.onAuthStateChanged(emit))
+
+function* realtimeSaga() {
+  const channel = yield call(createAuthStateChannel)
+  while (true) {
+    const user = yield take(channel)
+
+    yield put({
+      type: AUTH_STATE_CHANGE,
+      payload: { user }
+    })
+  }
+}
+
 export function* saga() {
+  yield spawn(realtimeSaga)
+
   yield all([takeEvery(SIGN_UP_REQUEST, signUpSaga), signInSaga()])
 }
