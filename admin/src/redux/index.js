@@ -21,8 +21,6 @@ const store = createStore(reducer, enhancer)
 
 sagaMiddleware.run(saga)
 
-initAuth(store)
-
 //dev only!!!!
 window.store = store
 
