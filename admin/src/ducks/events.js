@@ -1,4 +1,13 @@
-import { all, takeEvery, put, call, select } from 'redux-saga/effects'
+import {
+  all,
+  takeEvery,
+  put,
+  call,
+  select,
+  spawn,
+  take
+} from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga'
 import { appName } from '../config'
 import { Record, OrderedMap } from 'immutable'
 import { createSelector } from 'reselect'
@@ -173,7 +182,24 @@ export function* addPersonToEventSaga({ payload: { eventId, personId } }) {
   })
 }
 
+const createEventsChannel = () =>
+  eventChannel((emit) => api.subscribeForEvents(emit))
+
+function* realtimeSyncSaga() {
+  const channel = yield call(createEventsChannel)
+  while (true) {
+    const data = yield take(channel)
+
+    yield put({
+      type: FETCH_ALL_SUCCESS,
+      payload: data
+    })
+  }
+}
+
 export function* saga() {
+  yield spawn(realtimeSyncSaga)
+
   yield all([
     takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
     takeEvery(DELETE_EVENT_REQUEST, deleteEventSaga),
