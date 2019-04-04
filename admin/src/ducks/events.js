@@ -1,4 +1,5 @@
-import { all, takeEvery, put, call, select } from 'redux-saga/effects'
+import { all, takeEvery, put, call, select, take } from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga'
 import { appName } from '../config'
 import { Record, OrderedMap } from 'immutable'
 import { createSelector } from 'reselect'
@@ -14,6 +15,8 @@ const prefix = `${appName}/${moduleName}`
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
+
+export const UPDATE_ALL = `${prefix}/UPDATE_ALL`
 
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
@@ -51,6 +54,7 @@ export default function reducer(state = new ReducerRecord(), action) {
       return state.set('loading', true)
 
     case FETCH_ALL_SUCCESS:
+    case UPDATE_ALL:
       return state
         .set('loading', false)
         .set('loaded', true)
@@ -66,7 +70,7 @@ export default function reducer(state = new ReducerRecord(), action) {
       return state.set('loading', true)
 
     case DELETE_EVENT_SUCCESS:
-      return state.set('loading', false).deleteIn(['entities', payload.id])
+      return state.set('loading', false)
 
     default:
       return state
@@ -173,10 +177,32 @@ export function* addPersonToEventSaga({ payload: { eventId, personId } }) {
   })
 }
 
+const createEventChannel = () => eventChannel(api.subscribeForEvents)
+
+export function* realtimeSyncSaga() {
+  yield take(FETCH_ALL_REQUEST)
+
+  const channel = yield call(createEventChannel)
+
+  yield put({
+    type: FETCH_ALL_START
+  })
+
+  while (true) {
+    const data = yield take(channel)
+
+    yield put({
+      type: UPDATE_ALL,
+      payload: data
+    })
+  }
+}
+
 export function* saga() {
   yield all([
     takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
     takeEvery(DELETE_EVENT_REQUEST, deleteEventSaga),
-    takeEvery(ADD_PERSON_REQUEST, addPersonToEventSaga)
+    takeEvery(ADD_PERSON_REQUEST, addPersonToEventSaga),
+    realtimeSyncSaga()
   ])
 }
