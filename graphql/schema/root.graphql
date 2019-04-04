@@ -1,0 +1,8 @@
+type Event {
+id: ID
+title: String
+}
+
+type Query {
+    allEvents: [Event]
+}
