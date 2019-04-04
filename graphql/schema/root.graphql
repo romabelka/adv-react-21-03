@@ -1,6 +1,14 @@
 type Event {
     id: ID
     title: String
+    where: String
+    url: String
+    people: [Person]
+}
+
+type Person {
+    id: ID
+    firstName: String
 }
 
 type Query {

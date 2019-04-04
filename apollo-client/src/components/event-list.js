@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
+import Event from "./event";
 
 const query = gql`
     { 
@@ -23,7 +24,7 @@ class EventList extends Component {
                         return (
                             <ul>
                                 {data.allEvents.map(event => <li key={event.id}>
-                                    {event.title}
+                                    <Event event={event} />
                                 </li>)}
                             </ul>
                         )
