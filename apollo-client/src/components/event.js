@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import {Query} from 'react-apollo'
 import gql from 'graphql-tag'
+import PersonForm from "./person-form";
 
 const query = gql`
     query FetchEvent($id: ID) {
         event(id: $id) {
             id where url
             people {
-                firstName
+                firstName id
             }
         }
     }
@@ -35,15 +36,20 @@ function getBody(event) {
                         <>
                             <p>{data.event.where}</p>
                             <p>{data.event.url}</p>
-                            <p>
+                            <div>
                                 {data.event.people.map(person => person.firstName).join('; ')}
-                            </p>
+                                {getPeopleForms(data.event.people)}
+                            </div>
                         </>
                     )
                 }
             }
         </Query>
     )
+}
+
+function getPeopleForms(people) {
+    return people.map(person => <PersonForm key={person.id} person={person}/>)
 }
 
 export default Event

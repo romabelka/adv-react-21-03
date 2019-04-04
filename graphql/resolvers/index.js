@@ -8,9 +8,15 @@ module.exports = {
     },
     Query: {
         allEvents: () => Object.values(events),
-        event: (_, { id }) => {
-            console.log('---', id)
+        event: (_, {id}) => {
             return events[id]
+        }
+    },
+    Mutation: {
+        setName: (_, {id, name}) => {
+            const person = people.find(p => p.id === id)
+            person.firstName = name
+            return person
         }
     }
 }
