@@ -28,6 +28,6 @@ module.exports = app
  fetch('/' , {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ query: '{ movies { title } }' })
+  body: JSON.stringify({ query: '{ allEvents { title } }' })
 })
  */
