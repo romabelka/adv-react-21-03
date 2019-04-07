@@ -4,6 +4,9 @@ type Event {
     where: String
     url: String
     people: [Person]
+    when: String
+    submissionDeadline: String
+    month: String
 }
 
 type Person {
@@ -18,4 +21,5 @@ type Query {
 
 type Mutation {
     setName(id: ID, name: String): Person
+    addNewEvent(month: String, submissionDeadline: String, title: String, url: String, when: String, where: String): Event
 }
