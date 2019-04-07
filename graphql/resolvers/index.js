@@ -1,5 +1,5 @@
 const apiService = require('../services/api')
-const events = require('../mocks/events')
+let events = require('../mocks/events')
 const people = require('../mocks/people')
 
 module.exports = {
@@ -17,6 +17,19 @@ module.exports = {
             const person = people.find(p => p.id === id)
             person.firstName = name
             return person
+        },
+        setEvent: (_, event) => {
+            const id = Math.round(Math.random() * 1000000)
+            const newEvent = {
+                id,
+                peopleIds: [],
+                ...event
+            }
+            events = {
+                [id]: newEvent,
+                ...events
+            }
+            return newEvent
         }
     }
 }

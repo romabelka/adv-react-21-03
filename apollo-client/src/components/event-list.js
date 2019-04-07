@@ -3,7 +3,7 @@ import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Event from "./event";
 
-const query = gql`
+export const query = gql`
     { 
         allEvents { title id } 
     }
