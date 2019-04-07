@@ -1,5 +1,5 @@
 const apiService = require('../services/api')
-const events = require('../mocks/events')
+let events = require('../mocks/events')
 const people = require('../mocks/people')
 
 module.exports = {
@@ -17,6 +17,11 @@ module.exports = {
             const person = people.find(p => p.id === id)
             person.firstName = name
             return person
+        },
+        addNewEvent: (_, event) => {
+          event.id = new Date()
+          events[event.id] = event
+          return event;
         }
     }
 }
