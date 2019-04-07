@@ -3,7 +3,7 @@ import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Event from "./event";
 
-const query = gql`
+export const EventListQuery = gql`
     { 
         allEvents { title id } 
     }
@@ -16,7 +16,7 @@ class EventList extends Component {
 
     render() {
         return (
-            <Query query={query}>
+            <Query query={EventListQuery}>
                 {
                     ({ data, loading }) => {
                         if (loading) return <h1>Loading</h1>

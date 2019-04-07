@@ -12,10 +12,12 @@ type Person {
 }
 
 type Query {
-    allEvents: [Event]
+    allEvents: [Event],
+    allPeople: [Person],
     event(id: ID): Event,
 }
 
 type Mutation {
     setName(id: ID, name: String): Person
+    createEvent(id: ID, month: String, submissionDeadline: String, title: String, url: String, when: String, where: String, peopleIds: [ID]): Event
 }
