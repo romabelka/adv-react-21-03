@@ -3,11 +3,21 @@ import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Event from "./event";
 
-const query = gql`
+export const FETCH_ALL_EVENTS = gql`
     { 
         allEvents { title id } 
     }
 `
+
+export const newEventAdded = callback=> (cache,{data: {addEvent}})=>{
+    const {allEvents} = cache.readQuery({query: FETCH_ALL_EVENTS})
+    cache.writeQuery({
+        query: FETCH_ALL_EVENTS,
+        data: {allEvents: [addEvent, ...allEvents]}
+    })
+
+    callback()
+}
 
 class EventList extends Component {
     static propTypes = {
@@ -16,7 +26,7 @@ class EventList extends Component {
 
     render() {
         return (
-            <Query query={query}>
+            <Query query={FETCH_ALL_EVENTS}>
                 {
                     ({ data, loading }) => {
                         if (loading) return <h1>Loading</h1>

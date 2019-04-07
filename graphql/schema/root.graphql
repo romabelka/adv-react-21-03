@@ -18,4 +18,5 @@ type Query {
 
 type Mutation {
     setName(id: ID, name: String): Person
+    addEvent(title: String, where: String, url: String): Event
 }

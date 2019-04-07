@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import EventList from "./components/event-list";
+import EventsPage from "./components/event-page";
 
 class App extends Component {
     static propTypes = {
@@ -10,7 +10,7 @@ class App extends Component {
         return (
             <div>
                 <h1>Hello World</h1>
-                <EventList/>
+                <EventsPage/>
             </div>
         )
     }
