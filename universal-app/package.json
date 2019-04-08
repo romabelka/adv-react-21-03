@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
+    "static": "next export",
     "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
