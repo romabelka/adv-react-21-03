@@ -4,7 +4,7 @@ import PersonForm from './person-form'
 import query from '../queries/event'
 
 function Event({ event }) {
-    const [isOpen, setOpen] = useState(false)
+    const [isOpen, setOpen] = useState(true)
 
     return (
         <div>
