@@ -7,7 +7,7 @@ module.exports = {
         people: (event) => event.peopleIds.map(id => people.find(person => person.id === id))
     },
     Query: {
-        allEvents: () => Object.values(events),
+        allEvents: () => Object.values(events).reverse(),
         event: (_, {id}) => {
             return events[id]
         }
@@ -17,6 +17,13 @@ module.exports = {
             const person = people.find(p => p.id === id)
             person.firstName = name
             return person
+        },
+        addEvent: (_, { event }) => {
+            event.id = Date.now().toString()
+            event.people = []
+
+            events[event.id] = event
+            return event
         }
     }
 }

@@ -16,6 +16,13 @@ type Query {
     event(id: ID): Event,
 }
 
+input EventInput {
+    title: String
+    where: String
+    url: String
+}
+
 type Mutation {
     setName(id: ID, name: String): Person
+    addEvent(event: EventInput!): Event
 }

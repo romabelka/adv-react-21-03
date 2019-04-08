@@ -1,14 +1,6 @@
 import React, {useState} from 'react'
 import { Mutation } from 'react-apollo'
-import gql from 'graphql-tag'
-
-const mutation = gql`
-    mutation SetName($id: ID, $name: String) {
-        setName(id: $id, name: $name) {
-            id firstName
-        }
-    }
-`
+import mutation from '../queries/set-name-mutation'
 
 
 function PersonForm({ person }) {

@@ -1,13 +1,7 @@
 import React, { Component } from 'react'
 import { Query } from 'react-apollo'
-import gql from 'graphql-tag'
 import Event from "./event";
-
-const query = gql`
-    { 
-        allEvents { title id } 
-    }
-`
+import query from '../queries/event-list'
 
 class EventList extends Component {
     static propTypes = {

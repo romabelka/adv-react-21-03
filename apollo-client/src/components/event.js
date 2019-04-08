@@ -1,18 +1,7 @@
 import React, { useState } from 'react'
 import {Query} from 'react-apollo'
-import gql from 'graphql-tag'
-import PersonForm from "./person-form";
-
-const query = gql`
-    query FetchEvent($id: ID) {
-        event(id: $id) {
-            id where url
-            people {
-                firstName id
-            }
-        }
-    }
-`
+import PersonForm from './person-form'
+import query from '../queries/event'
 
 function Event({ event }) {
     const [isOpen, setOpen] = useState(false)
