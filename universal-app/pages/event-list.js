@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Link from 'next/link'
 
 class EventList extends Component {
     static propTypes = {
@@ -22,7 +23,11 @@ class EventList extends Component {
     render() {
         return (
             <ul>
-                {this.props.events.map(event => <li key={event.id}>{event.title}</li>)}
+                {this.props.events.map(event => <li key={event.id}>
+                    <Link href={`/event?id=${event.id}`} as={`/event/${event.id}`}>
+                        <a>{event.title}</a>
+                    </Link>
+                </li>)}
             </ul>
         )
     }
