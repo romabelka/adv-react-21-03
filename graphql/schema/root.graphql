@@ -12,7 +12,8 @@ type Person {
 }
 
 type Query {
-    allEvents: [Event]
+    allEvents: [Event],
+    allPeople: [Person],
     event(id: ID): Event,
 }
 
