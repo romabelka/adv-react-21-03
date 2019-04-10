@@ -8,8 +8,12 @@ module.exports = {
     },
     Query: {
         allEvents: () => Object.values(events).reverse(),
+        allPersons: () => people,
         event: (_, {id}) => {
             return events[id]
+        },
+        person: (_, {id}) => {
+            return people.find(person => person.id === id)
         }
     },
     Mutation: {
