@@ -27,7 +27,7 @@ class Person extends Component {
         return (
             <div>
                 <Link href="/person-list">
-                    <a>Event List</a>
+                    <a>Person List</a>
                 </Link>
                 <h1>{this.props.person.firstName}</h1>
             </div>
