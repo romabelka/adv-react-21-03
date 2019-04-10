@@ -13,6 +13,7 @@ type Person {
 
 type Query {
     allEvents: [Event]
+    allPeople: [Person]
     event(id: ID): Event,
 }
 
