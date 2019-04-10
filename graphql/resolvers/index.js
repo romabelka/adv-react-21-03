@@ -9,6 +9,9 @@ module.exports = {
     Query: {
         allEvents: () => Object.values(events).reverse(),
         allPeople: () => Object.values(people).reverse(),
+        person: (_, {id}) => {
+            return people.find(person => person.id === id)
+        },
         event: (_, {id}) => {
             return events[id]
         }

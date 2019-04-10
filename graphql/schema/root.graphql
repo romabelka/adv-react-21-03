@@ -15,6 +15,7 @@ type Query {
     allEvents: [Event],
     allPeople: [Person],
     event(id: ID): Event,
+    person(id: ID): Person,
 }
 
 input EventInput {
