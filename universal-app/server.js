@@ -13,6 +13,10 @@ nextApp.prepare().then(() => {
         return nextApp.render(req, res, '/event', { id: req.params.id })
     })
 
+    server.get('/person/:id', (req, res) => {
+        return nextApp.render(req, res, '/person', { id: req.params.id })
+    })
+
     server.get('*', (req, res) => {
         return handle(req, res)
     })

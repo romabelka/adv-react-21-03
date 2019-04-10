@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import Link from 'next/link'
-//import eventQuery from '../queries/event'
+import eventQuery from '../queries/event'
+import {Query} from "react-apollo";
+import Loader from "../components/loader";
 
-class Event extends Component {
+class EventPage extends Component {
     static propTypes = {
 
     }
@@ -17,10 +19,30 @@ class Event extends Component {
                 <Link href="/event-list">
                     <a>Event List</a>
                 </Link>
-                <h1>{this.props.id}</h1>
+                <Query query={eventQuery} variables={{ id: this.props.id }}>
+                    {({loading, data}) => loading
+                        ? <Loader/>
+                        : this.getEvent(data.event)
+                    }
+                </Query>
             </div>
         )
     }
+
+    getEvent = event => (
+        <div>
+            <h3>{event.title}</h3>
+            <ul>
+                {event.people.map(person =>
+                    <li key={person.id}>
+                        <Link href={`/person?id=${person.id}`} as={`/person/${person.id}`}>
+                            {person.firstName}
+                        </Link>
+                    </li>
+                )}
+            </ul>
+        </div>
+    )
 }
 
-export default Event
+export default EventPage

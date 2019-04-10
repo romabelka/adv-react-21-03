@@ -10,7 +10,9 @@ module.exports = {
         allEvents: () => Object.values(events).reverse(),
         event: (_, {id}) => {
             return events[id]
-        }
+        },
+        allPeople: () => people,
+        person: (_, {id}) => people.find(person => person.id === id)
     },
     Mutation: {
         setName: (_, {id, name}) => {

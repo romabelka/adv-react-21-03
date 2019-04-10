@@ -13,7 +13,9 @@ type Person {
 
 type Query {
     allEvents: [Event]
-    event(id: ID): Event,
+    event(id: ID): Event
+    allPeople: [Person]
+    person(id: ID!): Person
 }
 
 input EventInput {
