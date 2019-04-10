@@ -6,11 +6,17 @@ module.exports = {
     Event: {
         people: (event) => event.peopleIds.map(id => people.find(person => person.id === id))
     },
+    Person: {
+      events: (person) => person.eventsIds.map(id => events[id])
+    },
     Query: {
         allEvents: () => Object.values(events).reverse(),
         allPeople: () => Object.values(people).reverse(),
         event: (_, {id}) => {
             return events[id]
+        },
+        person: (_, {id}) => {
+          return people.find(person => person.id === id)
         }
     },
     Mutation: {

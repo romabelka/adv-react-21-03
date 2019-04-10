@@ -9,11 +9,13 @@ type Event {
 type Person {
     id: ID
     firstName: String
+    events: [Event]
 }
 
 type Query {
     allEvents: [Event]
     allPeople: [Person]
+    person(id: ID): Person
     event(id: ID): Event,
 }
 
