@@ -16,6 +16,7 @@ class Event extends Component {
         })
 
         const { data } = await res.json()
+
         return {
             event: data.event
         }
@@ -28,6 +29,16 @@ class Event extends Component {
                     <a>Event List</a>
                 </Link>
                 <h1>{this.props.event.title}</h1>
+                <div>
+                    {this.props.event.people.map(person => (
+                        <div key={person.id}>
+                            <Link href={`/person?id=${person.id}`} as={`/person/${person.id}`}>
+                                <a>{person.firstName}</a>
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+
             </div>
         )
     }
