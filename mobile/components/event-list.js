@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {ScrollView, FlatList, View, StyleSheet, Text} from 'react-native'
+import {TouchableOpacity, FlatList, View, StyleSheet, Text} from 'react-native'
 
 
 class EventList extends Component {
@@ -31,12 +31,18 @@ class EventList extends Component {
     keyExtractor = event => event.id
 
     renderItem = ({ item }) => (
-        <View key={item.id} style={styles.item}>
-            <Text>
-                {item.title}
-            </Text>
-        </View>
+        <TouchableOpacity onPress={this.handlePress}>
+            <View style={styles.item}>
+                <Text>
+                    {item.title}
+                </Text>
+            </View>
+        </TouchableOpacity>
     )
+
+    handlePress = () => {
+        console.log('---', 'pressed')
+    }
 }
 
 const styles = StyleSheet.create({
