@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 //import HelloWorld from './components/hello-world'
 import Auth from "./components/auth";
 import events from './mocks/events'
@@ -9,6 +9,7 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <Image source={require('./assets/logo.png')} style={styles.image} resizeMode={'contain'}/>
         <EventList events={Object.values(events)}/>
       </View>
     );
@@ -22,4 +23,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  image: {
+    width: '100%',
+    height: 100
+  }
 });
