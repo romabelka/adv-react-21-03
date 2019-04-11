@@ -31,7 +31,7 @@ class EventList extends Component {
     keyExtractor = event => event.id
 
     renderItem = ({ item }) => (
-        <View key={item.id}>
+        <View key={item.id} style={styles.item}>
             <Text>
                 {item.title}
             </Text>
@@ -40,6 +40,16 @@ class EventList extends Component {
 }
 
 const styles = StyleSheet.create({
+    item: {
+        backgroundColor: '#fdfdfd',
+        margin: 10,
+        shadowOffset: {
+            width: 5,
+            height: 2
+        },
+        shadowColor: '#000',
+        shadowOpacity: 0.8
+    }
 })
 
 export default EventList
