@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
             height: 2
         },
         shadowColor: '#000',
-        shadowOpacity: 0.8
+        shadowOpacity: 0.8,
+        elevation: 1
     }
 })
 
