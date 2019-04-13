@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {TouchableOpacity, FlatList, View, StyleSheet, Text} from 'react-native'
+import {withNavigation} from 'react-navigation'
 
 
 class EventList extends Component {
@@ -31,7 +32,7 @@ class EventList extends Component {
     keyExtractor = event => event.id
 
     renderItem = ({ item }) => (
-        <TouchableOpacity onPress={this.handlePress}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Event', {eventId: item.id})}>
             <View style={styles.item}>
                 <Text>
                     {item.title}
@@ -40,9 +41,6 @@ class EventList extends Component {
         </TouchableOpacity>
     )
 
-    handlePress = () => {
-        console.log('---', 'pressed')
-    }
 }
 
 const styles = StyleSheet.create({
@@ -59,4 +57,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EventList
+export default withNavigation(EventList)

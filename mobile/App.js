@@ -1,30 +1,25 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-//import HelloWorld from './components/hello-world'
-import Auth from "./components/auth";
 import events from './mocks/events'
 import EventList from "./components/event-list";
+import EventItem from "./components/event-item";
+import { createStackNavigator, createAppContainer } from 'react-navigation'
+import {Text} from 'react-native'
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Image source={require('./assets/logo.png')} style={styles.image} resizeMode={'contain'}/>
-        <EventList events={Object.values(events)}/>
-      </View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+const AppNavigator = createStackNavigator({
+  Home: {
+    screen: () => <EventList events={Object.values(events)}/>,
+    navigationOptions: () => ({
+      title: `Event List`,
+    })
   },
-  image: {
-    width: '100%',
-    height: 100
+  Event: {
+    screen: () => <EventItem events={events}/>,
+    navigationOptions: () => ({
+      title: `Event Item`,
+    })
   }
-});
+})
+
+const AppContainer = createAppContainer(AppNavigator);
+
+export default AppContainer
