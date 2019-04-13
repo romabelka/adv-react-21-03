@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {TouchableOpacity, FlatList, View, StyleSheet, Text} from 'react-native'
 import {withNavigation} from 'react-navigation'
-
+import {Consumer} from '../App'
 
 class EventList extends Component {
     static propTypes = {
@@ -9,11 +9,11 @@ class EventList extends Component {
     };
 
     render() {
-        return <FlatList
-            data={this.props.events}
-            renderItem={this.renderItem}
-            keyExtractor={this.keyExtractor}
-        />
+        return <Consumer>{({events}) => <FlatList
+          data={Object.values(events)}
+          renderItem={this.renderItem}
+          keyExtractor={this.keyExtractor}
+        />}</Consumer>
 /*
         return (
             <ScrollView>
