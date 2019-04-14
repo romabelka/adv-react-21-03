@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, Button, View, Alert } from 'react-native'
+import { Text, Button, View, Alert, StyleSheet } from 'react-native'
 
 export default class EventPage extends Component {
   removeHandler = () => {
@@ -19,13 +19,39 @@ export default class EventPage extends Component {
     const { event } = this.props;
 
     return (
-      <View>
-        <Text>
-          {event.title}
+      <View style={styles.page}>
+        <Text style={styles.title}>
+          Title: {event.title}
         </Text>
-        <Button title="Close" onPress={this.props.closeHandler} />
-        <Button title="Remove" onPress={this.removeHandler} />
+        <Text style={styles.text}>
+          Month: {event.month}
+        </Text>
+        <Text style={styles.text}>
+          when: {event.when}
+        </Text>
+        <Text style={styles.text}>
+          where: {event.where}
+        </Text>
+        <Button style={styles.closeButton} title="Close" onPress={this.props.closeHandler} />
+        <Button color="red" style={styles.removeButton} title="Remove" onPress={this.removeHandler} />
       </View>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  page: {
+      width: '100%',
+      backgroundColor: 'black',
+      color: '#fff',
+      elevation: 5
+  },
+  title: {
+    color: '#fff',
+    fontSize: 24
+  },
+  text: {
+    color: '#fff',
+    fontSize: 16
+  }
+})
