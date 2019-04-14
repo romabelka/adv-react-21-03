@@ -31,7 +31,7 @@ class EventList extends Component {
     keyExtractor = event => event.id
 
     renderItem = ({ item }) => (
-        <TouchableOpacity onPress={this.handlePress}>
+        <TouchableOpacity onPress={() => this.handlePress(item)}>
             <View style={styles.item}>
                 <Text>
                     {item.title}
@@ -40,8 +40,9 @@ class EventList extends Component {
         </TouchableOpacity>
     )
 
-    handlePress = () => {
+    handlePress = (event) => {
         console.log('---', 'pressed')
+        this.props.onClickEvent(event)
     }
 }
 
@@ -54,7 +55,8 @@ const styles = StyleSheet.create({
             height: 2
         },
         shadowColor: '#000',
-        shadowOpacity: 0.8
+        shadowOpacity: 0.8,
+        elevation: 5
     }
 })
 
