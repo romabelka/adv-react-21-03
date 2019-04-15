@@ -1,10 +1,14 @@
-import {observable, action, autorun} from 'mobx'
+import {observable, action, autorun, computed} from 'mobx'
 import authService from '../services/api'
 
 class AuthStore {
     @observable email = ''
     @observable password = ''
     @observable user = null
+
+    @computed get isValidPassword() {
+        return this.password.length > 8
+    }
 
     constructor() {
         setTimeout(() => {

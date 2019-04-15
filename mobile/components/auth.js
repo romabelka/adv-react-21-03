@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {View, Text, Button, TextInput, Platform} from 'react-native'
 import {observer} from 'mobx-react'
 import authStore from '../stores/auth'
+import IsValidPassword from "./is-valid-password";
 
 @observer
 class Auth extends Component {
@@ -26,6 +27,7 @@ class Auth extends Component {
                     <TextInput secureTextEntry value={authStore.password} onChangeText={this.setPassword}
                         style={styles.input}
                     />
+                    <IsValidPassword/>
                 </View>
                 <View>
                     <Button title="Sign In" onPress={this.handleSignIn}/>
