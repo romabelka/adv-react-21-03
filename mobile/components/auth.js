@@ -36,7 +36,7 @@ class Auth extends Component {
 
     handleSignIn = () => {
         this.props.onSignIn()
-        console.log('---', 'sign in', this.email, this.password)
+        authStore.signIn()
     }
 }
 

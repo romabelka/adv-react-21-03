@@ -1,12 +1,16 @@
 import {observable, action, autorun} from 'mobx'
+import authService from '../services/api'
 
 class AuthStore {
     @observable email = ''
     @observable password = ''
+    @observable user = null
 
     constructor() {
-        autorun(() => {
-            console.log('---', 'email:', this.email, 'password: ', this.password)
+        setTimeout(() => {
+            autorun(() => {
+                console.log('---', 'email: ', this.email)
+            })
         })
     }
 
@@ -17,8 +21,10 @@ class AuthStore {
         this.password = password
     }
 
-    signIn = () => {
-        console.log('---', 'sign in', this.email, this.password)
+    @action setUser = user => this.user = user
+
+    signIn = async () => {
+        this.setUser(await authService.signIn(this.email, this.password))
     }
 }
 

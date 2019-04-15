@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "expo": "^32.0.0",
+    "firebase": "^5.9.4",
     "lodash": "^4.17.11",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
