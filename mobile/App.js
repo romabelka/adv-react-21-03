@@ -1,6 +1,11 @@
 import React from 'react';
 import { StyleSheet} from 'react-native';
 import AppNavigator from './components/app-navigator'
+import {configure} from 'mobx'
+
+configure({
+  enforceActions: 'always'
+})
 
 export default class App extends React.Component {
   render() {
