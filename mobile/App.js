@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet} from 'react-native';
 import AppNavigator from './components/app-navigator'
 import {configure} from 'mobx'
+import {Provider} from 'mobx-react'
+import stores from './stores'
 
 configure({
   enforceActions: 'always'
@@ -9,7 +11,9 @@ configure({
 
 export default class App extends React.Component {
   render() {
-    return <AppNavigator />
+    return <Provider {...stores}>
+      <AppNavigator />
+    </Provider>
   }
 }
 const styles = StyleSheet.create({

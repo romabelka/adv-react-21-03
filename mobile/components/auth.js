@@ -1,30 +1,31 @@
 import React, { Component } from 'react'
 import {View, Text, Button, TextInput, Platform} from 'react-native'
-import {observer} from 'mobx-react'
+import {observer, inject} from 'mobx-react'
 import authStore from '../stores/auth'
 import IsValidPassword from "./is-valid-password";
 
+@inject('auth')
 @observer
 class Auth extends Component {
     static propTypes = {
 
     };
 
-    setEmail = authStore.setEmail
-    setPassword = authStore.setPassword
+    setEmail = this.props.auth.setEmail
+    setPassword = this.props.auth.setPassword
 
     render() {
         return (
             <View style={styles.container}>
                 <View>
                     <Text style={styles.text}>Email:</Text>
-                    <TextInput keyboardType="email-address" value={authStore.email} onChangeText={this.setEmail}
+                    <TextInput keyboardType="email-address" value={this.props.auth.email} onChangeText={this.setEmail}
                                style={styles.input}
                     />
                 </View>
                 <View>
                     <Text style={styles.text}>Password:</Text>
-                    <TextInput secureTextEntry value={authStore.password} onChangeText={this.setPassword}
+                    <TextInput secureTextEntry value={this.props.auth.password} onChangeText={this.setPassword}
                         style={styles.input}
                     />
                     <IsValidPassword/>
@@ -38,7 +39,7 @@ class Auth extends Component {
 
     handleSignIn = () => {
         this.props.onSignIn()
-        authStore.signIn()
+        this.props.auth.signIn()
     }
 }
 
