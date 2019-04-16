@@ -1,11 +1,23 @@
-import React from 'react'
+import React, { Component } from 'react'
 import EventList from '../events/event-list'
-import events from '../../mocks/events'
+import * as PropTypes from 'prop-types'
+import { inject, observer } from 'mobx-react'
 
-function EventListScreen({ navigation }) {
-    const handleEventPress = ({id, title}) => navigation.navigate('event', { id, title })
-    return <EventList events={Object.values(events)} onEventPress = {handleEventPress} />
+@inject('events')
+@observer
+class EventListScreen extends Component {
+    componentDidMount() {
+        this.props.events.loadEvents()
+    }
+
+    render() {
+        let { navigation } = this.props
+        const handleEventPress = ({ id, title }) => console.log('event', { id, title })
+        return <EventList events={this.props.events.events} onEventPress={handleEventPress}/>
+    }
 }
+
+EventListScreen.propTypes = { navigation: PropTypes.any }
 
 EventListScreen.navigationOptions = {
     title: 'events list'

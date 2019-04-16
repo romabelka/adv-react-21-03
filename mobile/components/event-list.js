@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import {TouchableOpacity, FlatList, View, StyleSheet, Text} from 'react-native'
 
-
 class EventList extends Component {
-    static propTypes = {
-
-    };
 
     render() {
         return <FlatList

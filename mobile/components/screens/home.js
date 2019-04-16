@@ -15,4 +15,6 @@ export default createAppContainer(createMaterialTopTabNavigator({
       title: 'People'
     },
   },
+}, {
+  lazy: true
 }))

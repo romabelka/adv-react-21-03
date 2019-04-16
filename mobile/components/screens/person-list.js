@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PersonList from '../people/person-list'
-import people from '../../mocks/people'
+import { inject, observer } from 'mobx-react'
 
-function PersonListScreen() {
-    const handleEventPress = ({id, title}) => console.log('person', { id, title })
-    return <PersonList people={Object.values(people)} onEventPress = {handleEventPress} />
+@inject('people')
+@observer
+class PersonListScreen extends Component {
+    componentDidMount() {
+        this.props.people.loadPeople()
+    }
+
+    render() {
+        const handlePersonPress = ({ id, firstName }) => console.log('person', { id, firstName })
+        return <PersonList people={Object.values(this.props.people.people)} onEventPress={handlePersonPress}/>
+    }
 }
 
 PersonListScreen.navigationOptions = {
