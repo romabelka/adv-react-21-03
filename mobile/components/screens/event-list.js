@@ -12,8 +12,8 @@ class EventListScreen extends Component {
 
     render() {
         let { navigation } = this.props
-        const handleEventPress = ({ id, title }) => console.log('event', { id, title })
-        return <EventList events={this.props.events.events} onEventPress={handleEventPress}/>
+        const handleEventPress = ({ id }) => this.props.events.deleteEvent(id)
+        return <EventList events={this.props.events.events} onEventDelete={handleEventPress}/>
     }
 }
 

@@ -9,7 +9,7 @@ class EventList extends Component {
     };
 
     render() {
-        const { onEventPress } = this.props
+        const { onEventDelete } = this.props
         const grouped = groupBy(this.props.events, event => event.title.charAt(0))
         const sections = Object.entries(grouped).map(([letter, list]) => ({
             title: `${letter}, ${list.length} events`,
@@ -18,7 +18,7 @@ class EventList extends Component {
         return <SectionList
             sections = {sections}
             renderSectionHeader = {({section}) => <Text style={styles.header}>{section.title}</Text>}
-            renderItem = {({item}) => <TouchableOpacity onPress={() => onEventPress(item.event)}>
+            renderItem = {({item}) => <TouchableOpacity onLongPress={() => onEventDelete(item.event)}>
                 <EventCard event = {item.event} />
             </TouchableOpacity>}
         />
