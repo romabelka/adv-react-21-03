@@ -1,6 +1,7 @@
 import { createAppContainer, createStackNavigator } from 'react-navigation'
 import AuthScreen from './screens/auth'
-import EventListScreen from './screens/event-list'
+// import EventListScreen from './screens/event-list'
+import TabNavigator from './tab-navigator'
 import EventScreen from './screens/event'
 
 export default createAppContainer(createStackNavigator({
@@ -11,7 +12,7 @@ export default createAppContainer(createStackNavigator({
         }
     },
     eventList: {
-        screen: EventListScreen
+        screen: TabNavigator
     },
     event: {
         screen: EventScreen
