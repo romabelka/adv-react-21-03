@@ -1,40 +1,36 @@
 import React, { Component } from 'react'
-import {Text, StyleSheet, SectionList, TouchableOpacity} from 'react-native'
+import {Text, StyleSheet, SectionList} from 'react-native'
 import {observer, inject} from 'mobx-react'
-import EventCard from './event-card'
+import PersonCard from './person-card'
 import groupBy from 'lodash/groupBy'
 
-@inject('events')
+@inject('people')
 @observer
-class EventList extends Component {
+class PeopleList extends Component {
     static propTypes = {
 
     };
 
     componentDidMount() {
-        this.props.events.subscribe()
+        this.props.people.subscribe()
     }
 
     componentWillUnmount() {
-        this.props.events.unsubscribe()
+        this.props.people.unsubscribe()
     }
 
     render() {
-        const { onEventPress, events } = this.props
-        const grouped = groupBy(events.list, event => event.title.charAt(0))
+        const { people } = this.props
+        console.log('---', people.list)
+        const grouped = groupBy(people.list, person => person.firstName.charAt(0))
         const sections = Object.entries(grouped).map(([letter, list]) => ({
-            title: `${letter}, ${list.length} events`,
-            data: list.map(event => ({key: event.id, event}))
+            title: `${letter}, ${list.length} people`,
+            data: list.map(person => ({key: person.id, person}))
         }))
         return <SectionList
             sections = {sections}
             renderSectionHeader = {({section}) => <Text style={styles.header}>{section.title}</Text>}
-            renderItem = {({item}) => <TouchableOpacity
-                onPress={() => onEventPress(item.event)}
-                onLongPress={() => events.delete(item.event.id)}
-            >
-                <EventCard event = {item.event} />
-            </TouchableOpacity>}
+            renderItem = {({item}) => <PersonCard person = {item.person} />}
         />
     }
 }
@@ -53,4 +49,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default EventList
+export default PeopleList

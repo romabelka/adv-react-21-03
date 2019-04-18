@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import {View, Text, Button, TextInput, Platform} from 'react-native'
 import {observer, inject} from 'mobx-react'
-import authStore from '../stores/auth'
 import IsValidPassword from "./is-valid-password";
 
 @inject('auth')
